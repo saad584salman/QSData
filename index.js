@@ -3,7 +3,7 @@ const app = express();
 const PORT = 3000;
 
 app.get('/', (req, res) => {
-  res.send('Tawaba is bondu');
+  res.send('QS Data Website under development');
 });
 
 app.listen(PORT, '0.0.0.0', () => {
