@@ -1,5 +1,6 @@
 module.exports = [
-  { username: 'admin', passwordHash: '$2b$10$6E6Xxe.kFVD/HnreWIIhlOMCh2e0LyU74VCUqd1sEWZW1DxKBUUUS', role: 'admin' },
-  { username: 'user', passwordHash: '$2b$10$vbbBydwIuoSIg2Fy4b0eXOItydffezjF0R3O8YWr1lIK53.53YFAy', role: 'user' },
-  { username: 'Saad', passwordHash: '$2b$10$poBZntjhvCCuxPbTSv0xLO4xDgPh6hiMs4C2NOvFjrnmALLlBJlDi', role: 'DG' }
+  { username: 'Saad', passwordHash: '$2b$10$HBEP2mujXFgGlvRhEd2Mie9Gh90t3OqYgYsZa1v8my7rlm4Z8xn.e', role: 'master' },
+  { username: 'originator1', passwordHash: '$2b$10$J5HEZLpU9d/kKYetwyO2t.Ce1G2AzixpHOJnxIzHDGshKbiAuv0sO', role: 'originator' },
+  { username: 'originator2', passwordHash: '$2b$10$J5HEZLpU9d/kKYetwyO2t.Ce1G2AzixpHOJnxIzHDGshKbiAuv0sO', role: 'originator' },
+  { username: 'senior1', passwordHash: '$2b$10$J5HEZLpU9d/kKYetwyO2t.Ce1G2AzixpHOJnxIzHDGshKbiAuv0sO', role: 'senior' }
 ];
