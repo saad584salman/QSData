@@ -15,7 +15,10 @@ app.use('/api/progress', progressRouter);
 
 describe('GET /api/progress', () => {
   it('responds with array', async () => {
-    const token = jwt.sign({ username: 'test' }, 'secret');
+    const token = jwt.sign(
+      { username: 'test' },
+      process.env.JWT_SECRET || 'secret',
+    );
     const res = await request(app)
       .get('/api/progress')
       .set('Authorization', `Bearer ${token}`);
