@@ -133,7 +133,18 @@
           const token = localStorage.getItem('token');
           fetch('/api/progress', { headers: { Authorization: `Bearer ${token}` } })
             .then(res => res.json())
-            .then(setItems);
+            .then(data => {
+              if (Array.isArray(data)) {
+                setItems(data);
+              } else {
+                console.error('Unexpected response', data);
+                setItems([]);
+              }
+            })
+            .catch(err => {
+              console.error('Failed to fetch items', err);
+              setItems([]);
+            });
         }, []);
         return (
           <div className="layout">
