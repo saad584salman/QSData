@@ -1,6 +1,7 @@
 # QSData
 
-QSData is a sample PERN stack application (PostgreSQL, Express, React, Node). It provides a basic API for tracking project progress and a React-based front end.
+QSData is a PERN stack application for managing Pakistan PWD project data.
+It implements JWT authentication, role based access control and several project tables.
 
 ## Features
 
@@ -26,13 +27,20 @@ QSData is a sample PERN stack application (PostgreSQL, Express, React, Node). It
 npm install
 ```
 
-3. Start the database and server using Docker Compose:
+3. Initialize the database schema and seed data:
+
+```bash
+npm run db:init
+```
+
+4. Start the database and server using Docker Compose:
 
 ```bash
 docker-compose up --build
 ```
 
 The API will be available at `http://localhost:3000`.
+`CLIENT_ORIGIN` controls which origin can access the API via CORS.
 
 The `.env` file requires `JWT_SECRET` which is used to sign login tokens.
 
