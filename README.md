@@ -34,6 +34,8 @@ docker-compose up --build
 
 The API will be available at `http://localhost:3000`.
 
+The `.env` file requires `JWT_SECRET` which is used to sign login tokens.
+
 ## Running Tests
 
 ```bash

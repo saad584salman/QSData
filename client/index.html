@@ -5,15 +5,75 @@
     <title>QSData Frontend</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-router-dom@6/umd/react-router-dom.development.js"></script>
     <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-image: url('https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-position: center;
+        color: #333;
+      }
+      .login-container {
+        backdrop-filter: blur(4px);
+        background-color: rgba(255,255,255,0.8);
+        padding: 20px;
+        max-width: 300px;
+        margin: 100px auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
+      label { display: block; margin-bottom: 8px; }
+      input { width: 100%; padding: 8px; margin-bottom: 12px; }
+      button { width: 100%; padding: 8px; }
+      ul { background: rgba(255,255,255,0.9); padding: 20px; list-style: none; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="text/babel">
-      function App() {
+      const { BrowserRouter, Routes, Route, useNavigate } = ReactRouterDOM;
+
+      function Login() {
+        const [username, setUsername] = React.useState('');
+        const [password, setPassword] = React.useState('');
+        const navigate = useNavigate();
+        const submit = async e => {
+          e.preventDefault();
+          const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            localStorage.setItem('token', data.token);
+            navigate('/');
+          } else {
+            alert('Invalid credentials');
+          }
+        };
+        return (
+          <div className="login-container">
+            <h2>Login</h2>
+            <form onSubmit={submit}>
+              <label>Username</label>
+              <input value={username} onChange={e => setUsername(e.target.value)} />
+              <label>Password</label>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+              <button type="submit">Login</button>
+            </form>
+          </div>
+        );
+      }
+
+      function Home() {
         const [items, setItems] = React.useState([]);
         React.useEffect(() => {
-          fetch('/api/progress')
+          const token = localStorage.getItem('token');
+          fetch('/api/progress', { headers: { Authorization: `Bearer ${token}` } })
             .then(res => res.json())
             .then(setItems);
         }, []);
@@ -25,6 +85,18 @@
           </ul>
         );
       }
+
+      function App() {
+        return (
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/*" element={<Home />} />
+            </Routes>
+          </BrowserRouter>
+        );
+      }
+
       ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
   </body>

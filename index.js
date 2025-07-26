@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
 const progressRouter = require('./routes/progress');
+const authRouter = require('./routes/auth');
 
 dotenv.config();
 
@@ -10,6 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+app.use('/api', authRouter);
 app.use('/api/progress', progressRouter);
 app.use(express.static(path.join(__dirname, 'client')));
 

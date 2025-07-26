@@ -3,3 +3,9 @@ CREATE TABLE IF NOT EXISTS progress (
   description TEXT NOT NULL,
   completed BOOLEAN DEFAULT false
 );
+
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL
+);
