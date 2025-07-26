@@ -59,6 +59,31 @@
         padding: 20px;
         list-style: none;
       }
+      .layout {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        grid-template-rows: 60px 1fr;
+        min-height: 100vh;
+      }
+      header {
+        grid-column: 1 / span 2;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        background: #343a40;
+        color: #fff;
+      }
+      header a {
+        color: #fff;
+        text-decoration: none;
+      }
+      aside {
+        background: #f8f9fa;
+        padding: 20px;
+      }
+      main {
+        padding: 20px;
+      }
     </style>
   </head>
   <body>
@@ -80,6 +105,9 @@
           if (res.ok) {
             const data = await res.json();
             localStorage.setItem('token', data.token);
+            if (data.role) {
+              localStorage.setItem('role', data.role);
+            }
             navigate('/home');
           } else {
             alert('Invalid credentials');
@@ -108,11 +136,25 @@
             .then(setItems);
         }, []);
         return (
-          <ul>
-            {items.map(i => (
-              <li key={i.id}>{i.description} - {i.completed ? 'done' : 'pending'}</li>
-            ))}
-          </ul>
+          <div className="layout">
+            <header>
+              <h1><a href="/home">QSData</a></h1>
+            </header>
+            <aside>
+              <nav>
+                <ul>
+                  <li><a href="/home">Home</a></li>
+                </ul>
+              </nav>
+            </aside>
+            <main>
+              <ul>
+                {items.map(i => (
+                  <li key={i.id}>{i.description} - {i.completed ? 'done' : 'pending'}</li>
+                ))}
+              </ul>
+            </main>
+          </div>
         );
       }
 
