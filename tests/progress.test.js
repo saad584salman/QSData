@@ -1,6 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const progressRouter = require('../routes/progress');
+const jwt = require('jsonwebtoken');
 
 jest.mock('../db', () => {
   return {
@@ -14,7 +15,10 @@ app.use('/api/progress', progressRouter);
 
 describe('GET /api/progress', () => {
   it('responds with array', async () => {
-    const res = await request(app).get('/api/progress');
+    const token = jwt.sign({ username: 'test' }, 'secret');
+    const res = await request(app)
+      .get('/api/progress')
+      .set('Authorization', `Bearer ${token}`);
     expect(Array.isArray(res.body)).toBe(true);
   });
 });
