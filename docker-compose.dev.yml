@@ -1,26 +1,29 @@
-version: '3'
 services:
   db:
     image: postgres:14
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: qsdata
     volumes:
       - db-data:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
+    # REMOVED: Database port exposure for security
+    # ports:
+    #   - '5432:5432'
   server:
     image: node:18
     working_dir: /app
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm install && npm run client:build && npm run dev"
     volumes:
       - .:/app
     ports:
       - '3000:3000'
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/qsdata
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - CLIENT_ORIGIN=${CLIENT_ORIGIN}
+      - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=1
     depends_on:
       - db
