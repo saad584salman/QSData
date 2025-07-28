@@ -1,8 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const controller = require('../controllers/zoneController');
-const auth = require('../middleware/auth');
+import { Router } from 'express';
+import * as controller from '../controllers/zoneController.js';
+import auth from '../middleware/auth.js';
+
+const router = Router();
 
 router.get('/', auth, controller.getAll);
 
-module.exports = router;
+export default router;

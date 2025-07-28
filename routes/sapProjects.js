@@ -1,9 +1,10 @@
-const express = require('express');
-const { body } = require('express-validator');
-const router = express.Router();
-const controller = require('../controllers/sapController');
-const auth = require('../middleware/auth');
-const role = require('../middleware/role');
+import { Router } from 'express';
+import { body } from 'express-validator';
+import * as controller from '../controllers/sapController.js';
+import auth from '../middleware/auth.js';
+import role from '../middleware/role.js';
+
+const router = Router();
 
 router.get('/', auth, controller.getAll);
 router.post(
@@ -16,4 +17,4 @@ router.post(
 router.put('/:sr_no', auth, role(['master']), controller.update);
 router.delete('/:sr_no', auth, role(['master']), controller.remove);
 
-module.exports = router;
+export default router;

@@ -1,10 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const controller = require('../controllers/progressController');
-const auth = require('../middleware/auth');
-const role = require('../middleware/role');
+import { Router } from 'express';
+import * as controller from '../controllers/progressController.js';
+import auth from '../middleware/auth.js';
+import role from '../middleware/role.js';
+
+const router = Router();
 
 router.get('/', auth, controller.getAll);
 router.post('/', auth, role(['master', 'originator']), controller.create);
 
-module.exports = router;
+export default router;

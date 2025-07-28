@@ -2,13 +2,16 @@
   "name": "qsdata",
   "version": "1.0.0",
   "description": "Sample PERN stack application",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "db:init": "node scripts/init_db.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "client": "vite",
+    "client:build": "vite build"
   },
   "author": "",
   "license": "ISC",
@@ -21,12 +24,17 @@
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.11.1"
+    "pg": "^8.11.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
     "jest": "^29.7.0",
     "nodemon": "^3.0.1",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "vite": "^5.2.0",
+    "@vitejs/plugin-react": "^4.0.3"
   }
 }

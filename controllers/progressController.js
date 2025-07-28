@@ -1,6 +1,6 @@
-const pool = require('../db');
+import pool from '../db/index.js';
 
-exports.getAll = async (req, res) => {
+export async function getAll(req, res) {
   try {
     const { rows } = await pool.query('SELECT * FROM progress ORDER BY id');
     res.json(rows);
@@ -8,9 +8,9 @@ exports.getAll = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
   }
-};
+}
 
-exports.create = async (req, res) => {
+export async function create(req, res) {
   const { description } = req.body;
   try {
     const { rows } = await pool.query(
@@ -22,4 +22,4 @@ exports.create = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
   }
-};
+}
