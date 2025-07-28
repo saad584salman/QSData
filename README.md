@@ -45,6 +45,22 @@ npm run client:build
 docker-compose up --build
 ```
 
+During development you can run the frontend separately using Vite:
+
+```bash
+npm run client
+```
+
+Then in another terminal start the backend with nodemon:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:5173` to view the React app. Avoid opening the
+`index.html` file directly, as this bypasses Vite and can lead to resource
+loading errors.
+
 The API will be available at `http://localhost:3000`.
 `CLIENT_ORIGIN` controls which origin can access the API via CORS.
 
