@@ -48,6 +48,18 @@ docker-compose up --build
 The API will be available at `http://localhost:3000`.
 `CLIENT_ORIGIN` controls which origin can access the API via CORS.
 
+### Development with Docker and hot reloading
+
+When developing locally you can start the stack with `docker-compose.dev.yml`
+to enable hot reloading:
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
+The API will still be reachable at `http://localhost:3000` and the React
+dev server will run on `http://localhost:5173`.
+
 The `.env` file requires `JWT_SECRET` which is used to sign login tokens.
 
 ## Running Tests

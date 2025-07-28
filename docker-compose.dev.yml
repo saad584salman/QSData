@@ -1,0 +1,40 @@
+version: '3'
+services:
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: qsdata
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+  server:
+    image: node:18
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - .:/app
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/qsdata
+      - CHOKIDAR_USEPOLLING=1
+    depends_on:
+      - db
+  client:
+    image: node:18
+    working_dir: /app
+    command: sh -c "npm install && npm run client"
+    volumes:
+      - .:/app
+    ports:
+      - '5173:5173'
+    environment:
+      - CHOKIDAR_USEPOLLING=1
+    depends_on:
+      - server
+volumes:
+  db-data:
