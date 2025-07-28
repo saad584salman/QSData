@@ -27,11 +27,9 @@ services:
   client:
     image: node:18
     working_dir: /app
-    command: sh -c "npm install && npm run client"
+    command: sh -c "npm install && npm run client:watch"
     volumes:
       - .:/app
-    ports:
-      - '5173:5173'
     environment:
       - CHOKIDAR_USEPOLLING=1
     depends_on:

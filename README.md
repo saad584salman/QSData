@@ -57,8 +57,9 @@ to enable hot reloading:
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
-The API will still be reachable at `http://localhost:3000` and the React
-dev server will run on `http://localhost:5173`.
+Both the API and client will be served from `http://localhost:3000`. Vite
+automatically rebuilds the `client/dist` directory whenever source files
+change so refreshing the page reflects updates immediately.
 
 The `.env` file requires `JWT_SECRET` which is used to sign login tokens.
 
