@@ -1,5 +1,5 @@
-const fs = require('fs');
-const pool = require('../db');
+import fs from 'fs';
+import pool from '../db/index.js';
 
 async function run() {
   const schema = fs.readFileSync('./db/schema.sql', 'utf8');

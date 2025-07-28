@@ -1,16 +1,20 @@
-const express = require('express');
-const path = require('path');
-const dotenv = require('dotenv');
-const helmet = require('helmet');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
-const progressRouter = require('./routes/progress');
-const authRouter = require('./routes/auth');
-const sapRouter = require('./routes/sapProjects');
-const zoneRouter = require('./routes/zoneSummary');
-const psdpRouter = require('./routes/psdpProjects');
+import express from 'express';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import helmet from 'helmet';
+import cors from 'cors';
+import rateLimit from 'express-rate-limit';
+import progressRouter from './routes/progress.js';
+import authRouter from './routes/auth.js';
+import sapRouter from './routes/sapProjects.js';
+import zoneRouter from './routes/zoneSummary.js';
+import psdpRouter from './routes/psdpProjects.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,19 +39,18 @@ app.use(
     origin: process.env.CLIENT_ORIGIN || '*',
   })
 );
-app.use(
-  rateLimit({ windowMs: 60 * 1000, max: 100 })
-);
+app.use(rateLimit({ windowMs: 60 * 1000, max: 100 }));
 
 app.use('/api', authRouter);
 app.use('/api/progress', progressRouter);
 app.use('/api/sap-projects', sapRouter);
 app.use('/api/zone-summary', zoneRouter);
 app.use('/api/psdp-projects', psdpRouter);
-app.use(express.static(path.join(__dirname, 'client')));
+
+app.use(express.static(path.join(__dirname, 'client/dist')));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/index.html'));
+  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {

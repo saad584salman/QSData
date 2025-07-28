@@ -1,6 +1,6 @@
-const pool = require('../db');
+import pool from '../db/index.js';
 
-exports.getAll = async (req, res) => {
+export async function getAll(req, res) {
   try {
     const { rows } = await pool.query('SELECT * FROM sap_projects ORDER BY sr_no');
     res.json(rows);
@@ -8,15 +8,10 @@ exports.getAll = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
   }
-};
+}
 
-exports.create = async (req, res) => {
-  const {
-    sr_no,
-    s_no,
-    name_of_scheme,
-    originator,
-  } = req.body;
+export async function create(req, res) {
+  const { sr_no, s_no, name_of_scheme, originator } = req.body;
   try {
     const { rows } = await pool.query(
       `INSERT INTO sap_projects (sr_no, s_no, name_of_scheme, originator) VALUES ($1,$2,$3,$4) RETURNING *`,
@@ -27,9 +22,9 @@ exports.create = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
   }
-};
+}
 
-exports.update = async (req, res) => {
+export async function update(req, res) {
   const { sr_no } = req.params;
   const { name_of_scheme } = req.body;
   try {
@@ -43,9 +38,9 @@ exports.update = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
   }
-};
+}
 
-exports.remove = async (req, res) => {
+export async function remove(req, res) {
   const { sr_no } = req.params;
   try {
     await pool.query('DELETE FROM sap_projects WHERE sr_no=$1', [sr_no]);
@@ -54,4 +49,4 @@ exports.remove = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
   }
-};
+}

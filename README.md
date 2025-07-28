@@ -33,7 +33,13 @@ npm install
 npm run db:init
 ```
 
-4. Start the database and server using Docker Compose:
+4. Build the client with Vite:
+
+```bash
+npm run client:build
+```
+
+5. Start the database and server using Docker Compose:
 
 ```bash
 docker-compose up --build
