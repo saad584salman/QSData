@@ -62,6 +62,10 @@ dev server will run on `http://localhost:5173`.
 
 The `.env` file requires `JWT_SECRET` which is used to sign login tokens.
 
+### Local development with nodemon
+
+Run `npm run dev` to start the server with nodemon. The `nodemon.json` config watches `client/src` and rebuilds the client with `npm run client:build` whenever the server restarts. The built files are served from `client/dist` on `http://localhost:3000`.
+
 ## Running Tests
 
 ```bash
