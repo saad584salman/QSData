@@ -23,17 +23,10 @@ export default class PropertyDefinition extends Model {
   }
 
   static get relationMappings() {
-    const User = require('./User.js').default;
-    const PropertyOption = require('./PropertyOption.js').default;
-    const EntityProperty = require('./EntityProperty.js').default;
-    const TaskRule = require('./TaskRule.js').default;
-    const Permission = require('./Permission.js').default;
-    const ApprovalRequest = require('./ApprovalRequest.js').default;
-    
     return {
       createdBy: {
         relation: Model.BelongsToOneRelation,
-        modelClass: User,
+        modelClass: () => import('./User.js'),
         join: {
           from: 'property_definitions.created_by_id',
           to: 'users.id'
@@ -41,7 +34,7 @@ export default class PropertyDefinition extends Model {
       },
       options: {
         relation: Model.HasManyRelation,
-        modelClass: PropertyOption,
+        modelClass: () => import('./PropertyOption.js'),
         join: {
           from: 'property_definitions.id',
           to: 'property_options.property_definition_id'
@@ -49,7 +42,7 @@ export default class PropertyDefinition extends Model {
       },
       entityProperties: {
         relation: Model.HasManyRelation,
-        modelClass: EntityProperty,
+        modelClass: () => import('./EntityProperty.js'),
         join: {
           from: 'property_definitions.id',
           to: 'entity_properties.property_definition_id'
@@ -57,7 +50,7 @@ export default class PropertyDefinition extends Model {
       },
       taskRules: {
         relation: Model.HasManyRelation,
-        modelClass: TaskRule,
+        modelClass: () => import('./TaskRule.js'),
         join: {
           from: 'property_definitions.id',
           to: 'task_rules.property_definition_id'
@@ -65,7 +58,7 @@ export default class PropertyDefinition extends Model {
       },
       permissions: {
         relation: Model.HasManyRelation,
-        modelClass: Permission,
+        modelClass: () => import('./Permission.js'),
         join: {
           from: 'property_definitions.id',
           to: 'permissions.property_definition_id'
@@ -73,7 +66,7 @@ export default class PropertyDefinition extends Model {
       },
       approvalRequests: {
         relation: Model.HasManyRelation,
-        modelClass: ApprovalRequest,
+        modelClass: () => import('./ApprovalRequest.js'),
         join: {
           from: 'property_definitions.id',
           to: 'approval_requests.property_definition_id'

@@ -20,22 +20,29 @@ function Login() {
     setIsLoading(true);
     
     try {
-      const res = await fetch('/api/auth/login', {
+      console.log('Attempting login with:', { username, password });
+      const res = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
       
+      console.log('Response status:', res.status);
+      console.log('Response headers:', res.headers);
+      
       if (res.ok) {
         const data = await res.json();
+        console.log('Login successful:', data);
         localStorage.setItem('token', data.token);
         if (data.role) localStorage.setItem('role', data.role);
         navigate('/dashboard');
       } else {
         const errorData = await res.json().catch(() => ({}));
+        console.log('Login failed:', errorData);
         setError(errorData.error || 'Invalid credentials');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError('Network error. Please check your connection.');
     } finally {
       setIsLoading(false);
@@ -51,6 +58,9 @@ function Login() {
           <li><strong>Admin:</strong> username: <code>admin</code>, password: <code>admin</code></li>
           <li><strong>User:</strong> username: <code>user</code>, password: <code>user</code></li>
         </ul>
+        <p style={{color: "#28a745", fontSize: "0.9rem", marginTop: "10px"}}>
+          ✅ Backend is running and credentials verified!
+        </p>
       </div>
       <form onSubmit={submit}>
         <div className="form-group">

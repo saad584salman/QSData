@@ -7,7 +7,12 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "dev:full": "npm run dev:backend & npm run dev:frontend",
+    "dev:backend": "nodemon index.js",
+    "dev:frontend": "vite",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:api": "node tests/api-test.js",
+    "test:quick": "curl -s http://localhost:3000/health",
     "db:init": "node scripts/init_db.js",
     "db:migrate": "knex migrate:latest",
     "db:migrate:rollback": "knex migrate:rollback",

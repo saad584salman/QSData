@@ -27,15 +27,11 @@ export default class Task extends Model {
   }
 
   static get relationMappings() {
-    const TaskRule = require('./TaskRule.js').default;
-    const User = require('./User.js').default;
-    const Office = require('./Office.js').default;
-    const TaskLog = require('./TaskLog.js').default;
     
     return {
       taskRule: {
         relation: Model.BelongsToOneRelation,
-        modelClass: TaskRule,
+        modelClass: () => import('./TaskRule.js'),
         join: {
           from: 'tasks.task_rule_id',
           to: 'task_rules.id'
@@ -43,7 +39,7 @@ export default class Task extends Model {
       },
       assignedToUser: {
         relation: Model.BelongsToOneRelation,
-        modelClass: User,
+        modelClass: () => import('./User.js'),
         join: {
           from: 'tasks.assigned_to_user_id',
           to: 'users.id'
@@ -51,7 +47,7 @@ export default class Task extends Model {
       },
       assignedToOffice: {
         relation: Model.BelongsToOneRelation,
-        modelClass: Office,
+        modelClass: () => import('./Office.js'),
         join: {
           from: 'tasks.assigned_to_office_id',
           to: 'offices.id'
@@ -59,7 +55,7 @@ export default class Task extends Model {
       },
       createdBy: {
         relation: Model.BelongsToOneRelation,
-        modelClass: User,
+        modelClass: () => import('./User.js'),
         join: {
           from: 'tasks.created_by_id',
           to: 'users.id'
@@ -67,7 +63,7 @@ export default class Task extends Model {
       },
       completedBy: {
         relation: Model.BelongsToOneRelation,
-        modelClass: User,
+        modelClass: () => import('./User.js'),
         join: {
           from: 'tasks.completed_by_id',
           to: 'users.id'
@@ -75,7 +71,7 @@ export default class Task extends Model {
       },
       logs: {
         relation: Model.HasManyRelation,
-        modelClass: TaskLog,
+        modelClass: () => import('./TaskLog.js'),
         join: {
           from: 'tasks.id',
           to: 'task_logs.task_id'

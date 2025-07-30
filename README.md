@@ -48,12 +48,37 @@ npm install
 node scripts/setup-dev.js
 ```
 
-3. **Start with Docker (Recommended)**
+3. **Start Development Environment**
+
+**Option A: Automated Launcher (Recommended)**
+
+```bash
+# Single Terminal (Recommended)
+./start-dev.ps1
+
+# Separate Windows
+./dev-start.ps1     # PowerShell
+dev-start.bat       # Command Prompt
+```
+
+**Option B: Docker (Full Stack)**
 
 ```bash
 # Start all services (database, backend, frontend)
 docker-compose -f docker-compose.dev.yml up --build
 ```
+
+**Option C: Manual Start**
+
+```bash
+# Terminal 1 - Backend
+npm run dev:backend
+
+# Terminal 2 - Frontend
+npm run dev:frontend
+```
+
+> 📖 **Detailed Development Guide**: See [DEVELOPMENT.md](./DEVELOPMENT.md) for comprehensive setup instructions and troubleshooting.
 
 4. **Access the Application**
 

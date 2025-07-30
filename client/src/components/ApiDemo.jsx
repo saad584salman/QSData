@@ -13,7 +13,7 @@ const ApiDemo = () => {
   });
 
   const makeRequest = async (endpoint, method = 'GET', data = null) => {
-    const requestKey = `${method} ${endpoint}`;
+    const requestKey = `${method}-${endpoint}`;
     setLoading(prev => ({ ...prev, [requestKey]: true }));
     try {
       const requestOptions = {
@@ -28,7 +28,13 @@ const ApiDemo = () => {
       
       const response = await fetch(`/api${endpoint}`, requestOptions);
       
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (e) {
+        result = { message: 'Response is not JSON' };
+      }
+      
       setResults(prev => ({ 
         ...prev, 
         [requestKey]: { 
@@ -56,7 +62,7 @@ const ApiDemo = () => {
     if (!username || !password) return;
     
     await makeRequest('/auth/login', 'POST', { username, password });
-    const result = results['POST /auth/login'];
+    const result = results['POST-/auth/login'];
     if (result?.status === 200 && result.data.token) {
       setToken(result.data.token);
       localStorage.setItem('token', result.data.token);
@@ -64,57 +70,63 @@ const ApiDemo = () => {
     }
   };
 
+  // Clear results when switching tabs to fix display issues
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setResults({});
+    setLoading({});
+    // Initialize form data for new tab if it doesn't exist
+    setFormData(prev => {
+      const newFormData = { ...prev };
+      if (!newFormData[tabId]) {
+        newFormData[tabId] = {};
+      }
+      return newFormData;
+    });
+  };
+
   const tabs = [
     { id: 'auth', label: 'Authentication', endpoints: [
-      { path: '/auth/login', method: 'POST', description: 'User login' }
+      { path: '/auth/login', method: 'POST', description: 'User login', requiresAuth: false }
     ]},
     { id: 'projects', label: 'Projects', endpoints: [
-      { path: '/projects', method: 'GET', description: 'Get all projects' },
-      { path: '/projects/1', method: 'GET', description: 'Get project by ID' },
-      { path: '/projects', method: 'POST', description: 'Create new project' },
-      { path: '/projects/1', method: 'PUT', description: 'Update project' },
-      { path: '/projects/1', method: 'DELETE', description: 'Delete project' }
+      { path: '/projects', method: 'GET', description: 'Get all projects', requiresAuth: true },
+      { path: '/projects/1', method: 'GET', description: 'Get project by ID', requiresAuth: true },
+      { path: '/projects', method: 'POST', description: 'Create new project', requiresAuth: true },
+      { path: '/projects/1', method: 'PUT', description: 'Update project', requiresAuth: true },
+      { path: '/projects/1', method: 'DELETE', description: 'Delete project', requiresAuth: true }
     ]},
     { id: 'property-definitions', label: 'Property Definitions', endpoints: [
-      { path: '/property-definitions', method: 'GET', description: 'Get all property definitions' },
-      { path: '/property-definitions/1', method: 'GET', description: 'Get property definition by ID' },
-      { path: '/property-definitions', method: 'POST', description: 'Create property definition' },
-      { path: '/property-definitions/1', method: 'PUT', description: 'Update property definition' },
-      { path: '/property-definitions/1', method: 'DELETE', description: 'Delete property definition' }
+      { path: '/property-definitions', method: 'GET', description: 'Get all property definitions', requiresAuth: true },
+      { path: '/property-definitions/1', method: 'GET', description: 'Get property definition by ID', requiresAuth: true },
+      { path: '/property-definitions', method: 'POST', description: 'Create property definition', requiresAuth: true },
+      { path: '/property-definitions/1', method: 'PUT', description: 'Update property definition', requiresAuth: true },
+      { path: '/property-definitions/1', method: 'DELETE', description: 'Delete property definition', requiresAuth: true }
     ]},
     { id: 'entity-properties', label: 'Entity Properties', endpoints: [
-      { path: '/entity-properties', method: 'GET', description: 'Get all entity properties' },
-      { path: '/entity-properties/1', method: 'GET', description: 'Get entity property by ID' },
-      { path: '/entity-properties', method: 'POST', description: 'Create entity property' },
-      { path: '/entity-properties/1', method: 'PUT', description: 'Update entity property' },
-      { path: '/entity-properties/1', method: 'DELETE', description: 'Delete entity property' }
+      { path: '/entity-properties', method: 'GET', description: 'Get all entity properties', requiresAuth: true },
+      { path: '/entity-properties/1', method: 'GET', description: 'Get entity property by ID', requiresAuth: true },
+      { path: '/entity-properties', method: 'POST', description: 'Create entity property', requiresAuth: true },
+      { path: '/entity-properties/1', method: 'PUT', description: 'Update entity property', requiresAuth: true },
+      { path: '/entity-properties/1', method: 'DELETE', description: 'Delete entity property', requiresAuth: true }
     ]},
     { id: 'tasks', label: 'Tasks', endpoints: [
-      { path: '/tasks', method: 'GET', description: 'Get all tasks' },
-      { path: '/tasks/1', method: 'GET', description: 'Get task by ID' },
-      { path: '/tasks', method: 'POST', description: 'Create new task' },
-      { path: '/tasks/1', method: 'PUT', description: 'Update task' },
-      { path: '/tasks/1', method: 'DELETE', description: 'Delete task' },
-      { path: '/tasks/1/complete', method: 'POST', description: 'Complete task' }
+      { path: '/tasks', method: 'GET', description: 'Get all tasks', requiresAuth: true },
+      { path: '/tasks/1', method: 'GET', description: 'Get task by ID', requiresAuth: true },
+      { path: '/tasks', method: 'POST', description: 'Create new task', requiresAuth: true },
+      { path: '/tasks/1', method: 'PUT', description: 'Update task', requiresAuth: true },
+      { path: '/tasks/1', method: 'DELETE', description: 'Delete task', requiresAuth: true },
+      { path: '/tasks/1/complete', method: 'POST', description: 'Complete task', requiresAuth: true }
     ]},
     { id: 'progress', label: 'Progress', endpoints: [
-      { path: '/progress', method: 'GET', description: 'Get progress data' },
-      { path: '/progress', method: 'POST', description: 'Create progress entry' }
-    ]},
-    { id: 'psdp-projects', label: 'PSDP Projects', endpoints: [
-      { path: '/psdp-projects', method: 'GET', description: 'Get PSDP projects' }
-    ]},
-    { id: 'sap-projects', label: 'SAP Projects', endpoints: [
-      { path: '/sap-projects', method: 'GET', description: 'Get SAP projects' },
-      { path: '/sap-projects', method: 'POST', description: 'Create SAP project' },
-      { path: '/sap-projects/1', method: 'PUT', description: 'Update SAP project' },
-      { path: '/sap-projects/1', method: 'DELETE', description: 'Delete SAP project' }
+      { path: '/progress', method: 'GET', description: 'Get progress data', requiresAuth: true },
+      { path: '/progress', method: 'POST', description: 'Create progress entry', requiresAuth: true }
     ]},
     { id: 'zone-summary', label: 'Zone Summary', endpoints: [
-      { path: '/zone-summary', method: 'GET', description: 'Get zone summary' }
+      { path: '/zone-summary', method: 'GET', description: 'Get zone summary', requiresAuth: true }
     ]},
     { id: 'health', label: 'Health Check', endpoints: [
-      { path: '/health', method: 'GET', description: 'API health check' }
+      { path: '/health', method: 'GET', description: 'API health check', requiresAuth: false }
     ]}
   ];
 
@@ -157,12 +169,6 @@ const ApiDemo = () => {
         { name: 'entity_id', label: 'Entity ID', type: 'number', required: true },
         { name: 'progress_data', label: 'Progress Data (JSON)', type: 'textarea', required: true }
       ],
-      'psdp-projects': [
-        { name: 'project_id', label: 'Project ID', type: 'number', required: true }
-      ],
-      'sap-projects': [
-        { name: 'sr_no', label: 'SR Number', type: 'number', required: true }
-      ],
       'zone-summary': [
         { name: 'zone_id', label: 'Zone ID', type: 'number' },
         { name: 'date_from', label: 'Date From', type: 'date' },
@@ -185,8 +191,23 @@ const ApiDemo = () => {
 
   const handleSubmit = (endpoint, method) => {
     const data = formData[activeTab] || {};
+    
+    // For POST/PUT requests, check if required fields are filled
+    if ((method === 'POST' || method === 'PUT') && Object.keys(data).length === 0) {
+      const requiredFields = getFormFields(activeTab).filter(field => field.required);
+      if (requiredFields.length > 0) {
+        alert(`Please fill in the required fields: ${requiredFields.map(f => f.label).join(', ')}`);
+        return;
+      }
+    }
+    
+    // Clean up data - remove empty values
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([key, value]) => value !== '' && value !== null && value !== undefined)
+    );
+    
     // Only pass data for non-GET/HEAD requests
-    const requestData = (method === 'GET' || method === 'HEAD') ? null : (Object.keys(data).length > 0 ? data : null);
+    const requestData = (method === 'GET' || method === 'HEAD') ? null : (Object.keys(cleanData).length > 0 ? cleanData : null);
     makeRequest(endpoint, method, requestData);
   };
 
@@ -195,12 +216,19 @@ const ApiDemo = () => {
       <h2>API Endpoint Demonstrations</h2>
       <p>This page demonstrates all database API endpoints and their intended outcomes.</p>
       
+      {token && (
+        <div className="auth-status">
+          <span className="auth-indicator">🔐 Authenticated</span>
+          <span className="role-info">Role: {localStorage.getItem('role') || 'Unknown'}</span>
+        </div>
+      )}
+      
       <div className="demo-tabs">
         {tabs.map(tab => (
           <button
             key={tab.id}
             className={`tab ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabChange(tab.id)}
           >
             {tab.label}
           </button>
@@ -232,8 +260,8 @@ const ApiDemo = () => {
                   placeholder="Enter password"
                 />
               </div>
-              <button onClick={handleLogin} disabled={loading['POST /auth/login']}>
-                {loading['POST /auth/login'] ? 'Logging in...' : 'Login'}
+              <button onClick={handleLogin} disabled={loading['POST-/auth/login']}>
+                {loading['POST-/auth/login'] ? 'Logging in...' : 'Login'}
               </button>
               {token && (
                 <div className="token-info">
@@ -243,9 +271,29 @@ const ApiDemo = () => {
             </div>
           )}
 
-          {activeTab !== 'auth' && (
+          {activeTab !== 'auth' && activeTab !== 'health' && (
             <div className="form-section">
               <h4>Request Form</h4>
+              <div className="sample-data-notice">
+                <p><strong>💡 Tip:</strong> Use these sample values for testing:</p>
+                <div className="sample-values">
+                  {activeTab === 'projects' && (
+                    <span>Project name: "Test Project", Parent ID: 1</span>
+                  )}
+                  {activeTab === 'property-definitions' && (
+                    <span>Entity type: "project", Property key: "budget", Value type: "number"</span>
+                  )}
+                  {activeTab === 'entity-properties' && (
+                    <span>Entity type: "project", Entity ID: 1, Property Definition ID: 1, Value: "50000"</span>
+                  )}
+                  {activeTab === 'tasks' && (
+                    <span>Task rule ID: 1, Entity type: "project", Entity ID: 1</span>
+                  )}
+                  {activeTab === 'progress' && (
+                    <span>Entity type: "project", Entity ID: 1, Progress data: {'{"progress": 75}'}</span>
+                  )}
+                </div>
+              </div>
               {getFormFields(activeTab).map(field => (
                 <div key={field.name} className="form-group">
                   <label>{field.label}:</label>
@@ -285,30 +333,38 @@ const ApiDemo = () => {
           )}
 
           <div className="endpoints-list">
-            {tabs.find(t => t.id === activeTab)?.endpoints.map(endpoint => (
-              <div key={endpoint.path} className="endpoint-item">
+            {tabs.find(t => t.id === activeTab)?.endpoints.map((endpoint, index) => (
+              <div key={`${activeTab}-${endpoint.method}-${endpoint.path}-${index}`} className="endpoint-item">
                 <div className="endpoint-header">
-                  <span className="method">{endpoint.method}</span>
+                  <span className="method" data-method={endpoint.method}>{endpoint.method}</span>
                   <span className="path">{endpoint.path}</span>
                   <span className="description">{endpoint.description}</span>
+                  {endpoint.requiresAuth && !token && (
+                    <span className="auth-required">⚠️ Requires Auth</span>
+                  )}
                   <button
                     onClick={() => handleSubmit(endpoint.path, endpoint.method)}
-                    disabled={loading[`${endpoint.method} ${endpoint.path}`]}
+                    disabled={loading[`${endpoint.method}-${endpoint.path}`] || (endpoint.requiresAuth && !token)}
                     className="test-btn"
                   >
-                    {loading[`${endpoint.method} ${endpoint.path}`] ? 'Testing...' : 'Test'}
+                    {loading[`${endpoint.method}-${endpoint.path}`] ? 'Testing...' : 'Test'}
                   </button>
                 </div>
                 
-                {results[`${endpoint.method} ${endpoint.path}`] && (
-                  <div className="result-section">
+                {results[`${endpoint.method}-${endpoint.path}`] && (
+                  <div className={`result-section ${results[`${endpoint.method}-${endpoint.path}`].status >= 200 && results[`${endpoint.method}-${endpoint.path}`].status < 300 ? 'success' : 'error'}`}>
                     <h5>Response:</h5>
                     <div className="result-details">
-                      <div><strong>Status:</strong> {results[`${endpoint.method} ${endpoint.path}`].status}</div>
-                      <div><strong>Timestamp:</strong> {results[`${endpoint.method} ${endpoint.path}`].timestamp}</div>
+                      <div>
+                        <strong>Status:</strong> 
+                        <span className={`status-code ${results[`${endpoint.method}-${endpoint.path}`].status >= 200 && results[`${endpoint.method}-${endpoint.path}`].status < 300 ? 'success' : 'error'}`}>
+                          {results[`${endpoint.method}-${endpoint.path}`].status}
+                        </span>
+                      </div>
+                      <div><strong>Timestamp:</strong> {new Date(results[`${endpoint.method}-${endpoint.path}`].timestamp).toLocaleTimeString()}</div>
                     </div>
                     <pre className="result-data">
-                      {JSON.stringify(results[`${endpoint.method} ${endpoint.path}`].data, null, 2)}
+                      {JSON.stringify(results[`${endpoint.method}-${endpoint.path}`].data, null, 2)}
                     </pre>
                   </div>
                 )}
