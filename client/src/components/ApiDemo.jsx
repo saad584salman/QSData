@@ -13,7 +13,8 @@ const ApiDemo = () => {
   });
 
   const makeRequest = async (endpoint, method = 'GET', data = null) => {
-    setLoading(prev => ({ ...prev, [endpoint]: true }));
+    const requestKey = `${method} ${endpoint}`;
+    setLoading(prev => ({ ...prev, [requestKey]: true }));
     try {
       const requestOptions = {
         method,
@@ -30,7 +31,7 @@ const ApiDemo = () => {
       const result = await response.json();
       setResults(prev => ({ 
         ...prev, 
-        [endpoint]: { 
+        [requestKey]: { 
           status: response.status, 
           data: result,
           timestamp: new Date().toISOString()
@@ -39,14 +40,14 @@ const ApiDemo = () => {
     } catch (error) {
       setResults(prev => ({ 
         ...prev, 
-        [endpoint]: { 
+        [requestKey]: { 
           status: 'ERROR', 
           data: { error: error.message },
           timestamp: new Date().toISOString()
         }
       }));
     } finally {
-      setLoading(prev => ({ ...prev, [endpoint]: false }));
+      setLoading(prev => ({ ...prev, [requestKey]: false }));
     }
   };
 
@@ -55,7 +56,7 @@ const ApiDemo = () => {
     if (!username || !password) return;
     
     await makeRequest('/auth/login', 'POST', { username, password });
-    const result = results['/auth/login'];
+    const result = results['POST /auth/login'];
     if (result?.status === 200 && result.data.token) {
       setToken(result.data.token);
       localStorage.setItem('token', result.data.token);
@@ -278,22 +279,22 @@ const ApiDemo = () => {
                   <span className="description">{endpoint.description}</span>
                   <button
                     onClick={() => handleSubmit(endpoint.path, endpoint.method)}
-                    disabled={loading[endpoint.path]}
+                    disabled={loading[`${endpoint.method} ${endpoint.path}`]}
                     className="test-btn"
                   >
-                    {loading[endpoint.path] ? 'Testing...' : 'Test'}
+                    {loading[`${endpoint.method} ${endpoint.path}`] ? 'Testing...' : 'Test'}
                   </button>
                 </div>
                 
-                {results[endpoint.path] && (
+                {results[`${endpoint.method} ${endpoint.path}`] && (
                   <div className="result-section">
                     <h5>Response:</h5>
                     <div className="result-details">
-                      <div><strong>Status:</strong> {results[endpoint.path].status}</div>
-                      <div><strong>Timestamp:</strong> {results[endpoint.path].timestamp}</div>
+                      <div><strong>Status:</strong> {results[`${endpoint.method} ${endpoint.path}`].status}</div>
+                      <div><strong>Timestamp:</strong> {results[`${endpoint.method} ${endpoint.path}`].timestamp}</div>
                     </div>
                     <pre className="result-data">
-                      {JSON.stringify(results[endpoint.path].data, null, 2)}
+                      {JSON.stringify(results[`${endpoint.method} ${endpoint.path}`].data, null, 2)}
                     </pre>
                   </div>
                 )}
