@@ -15,11 +15,17 @@ const ApiDemo = () => {
   const makeRequest = async (endpoint, method = 'GET', data = null) => {
     setLoading(prev => ({ ...prev, [endpoint]: true }));
     try {
-      const response = await fetch(`/api${endpoint}`, {
+      const requestOptions = {
         method,
-        headers: getAuthHeaders(),
-        ...(data && { body: JSON.stringify(data) })
-      });
+        headers: getAuthHeaders()
+      };
+      
+      // Only add body for non-GET/HEAD requests
+      if (data && method !== 'GET' && method !== 'HEAD') {
+        requestOptions.body = JSON.stringify(data);
+      }
+      
+      const response = await fetch(`/api${endpoint}`, requestOptions);
       
       const result = await response.json();
       setResults(prev => ({ 
@@ -164,7 +170,9 @@ const ApiDemo = () => {
 
   const handleSubmit = (endpoint, method) => {
     const data = formData[activeTab] || {};
-    makeRequest(endpoint, method, Object.keys(data).length > 0 ? data : null);
+    // Only pass data for non-GET/HEAD requests
+    const requestData = (method === 'GET' || method === 'HEAD') ? null : (Object.keys(data).length > 0 ? data : null);
+    makeRequest(endpoint, method, requestData);
   };
 
   return (
