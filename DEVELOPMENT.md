@@ -1,113 +1,265 @@
-# QSData Development Setup
+# QSData Development Environment
 
-## Port Configuration
+## 🚀 Quick Start
 
-To prevent port conflicts, this project now uses separate ports for different services:
+### One-Command Setup
 
-- **Backend API Server**: `http://localhost:3000`
-- **Frontend Development Server**: `http://localhost:5173`
-- **Database**: PostgreSQL (configured in `.env`)
+**Windows (PowerShell):**
 
-## Starting Development Environment
-
-### Option 1: Automated Launcher (Recommended)
-
-#### Single Terminal (Recommended):
-```bash
-./start-dev.ps1
+```powershell
+.\dev-start.ps1
 ```
 
-#### Separate Windows:
-```bash
-# PowerShell
-./dev-start.ps1
+**Windows (Command Prompt):**
 
-# Command Prompt
+```cmd
 dev-start.bat
 ```
 
-**Single Terminal Benefits:**
-- Runs both services in one terminal with proper output
-- Easier to manage and stop (Ctrl+C stops both)
-- Shows current directory for debugging
-
-**Separate Windows Benefits:**
-- Opens backend and frontend in separate terminal windows
-- Good for monitoring each service independently
-- Automatically switches to correct directory
-
-Both approaches will:
-1. Start the backend server on port 3000
-2. Start the frontend development server on port 5173
-3. Open your browser to the frontend URL
-
-### Option 2: Manual Start
-
-#### Terminal 1 - Backend:
+**Cross-Platform (Node.js):**
 
 ```bash
-npm run dev:backend
+npm run dev:start
 ```
 
-#### Terminal 2 - Frontend:
+**Direct Docker Compose:**
 
 ```bash
-npm run dev:frontend
+npm run dev:docker
 ```
 
-### Option 3: Single Command (Cross-platform)
+## 📋 Prerequisites
+
+1. **Docker Desktop** - Download from [docker.com](https://www.docker.com/products/docker-desktop)
+2. **Node.js 18+** - Download from [nodejs.org](https://nodejs.org/)
+3. **Git** - For version control
+
+## 🏗️ Architecture
+
+The development environment consists of three main services:
+
+### 🗄️ Database (PostgreSQL)
+
+- **Port**: 5432
+- **Image**: `postgres:14-alpine`
+- **Features**:
+  - Health checks
+  - Persistent volume storage
+  - Automatic migrations and seeding
+
+### 🔧 Backend Server (Node.js/Express)
+
+- **Port**: 3000
+- **Features**:
+  - Hot reloading with nodemon
+  - TypeScript support
+  - API documentation
+  - JWT authentication
+  - Rate limiting
+
+### 🌐 Frontend Client (React/Vite)
+
+- **Port**: 5173
+- **Features**:
+  - Hot reloading with Vite
+  - TypeScript support
+  - Tailwind CSS
+  - Dark mode
+  - Responsive design
+
+## 🔧 Development Commands
+
+### Startup Commands
 
 ```bash
-npm run dev:full
+# Start development environment
+npm run dev:start          # Cross-platform startup script
+npm run dev:docker         # Direct Docker Compose
+npm run dev:docker:clean   # Clean restart (removes volumes)
+
+# Stop services
+npm run docker:down        # Stop containers
+npm run docker:clean       # Stop and clean everything
 ```
 
-## Available Scripts
+### Database Commands
 
-- `npm run dev` - Backend only (legacy)
-- `npm run dev:backend` - Backend server only
-- `npm run dev:frontend` - Frontend development server only
-- `npm run dev:full` - Both services (may not work on all shells)
-- `npm run client:build` - Build frontend for production
+```bash
+npm run db:setup          # Run migrations + seed
+npm run db:reset          # Rollback + migrate + seed
+npm run db:migrate        # Run migrations only
+npm run db:seed           # Run seeds only
+```
 
-## Development URLs
+### Development Commands
 
-- **Frontend Application**: http://localhost:5173
-- **Backend API**: http://localhost:3000/api
-- **Health Check**: http://localhost:3000/health
+```bash
+npm run dev:backend       # Backend only (local)
+npm run dev:frontend      # Frontend only (local)
+npm run dev:full          # Both (local)
+npm run type-check        # TypeScript check
+npm run build            # Build frontend
+```
 
-## API Demo Access
+### Utility Commands
 
-1. Start the development environment using any method above
-2. Open http://localhost:5173 in your browser
-3. Login with development credentials:
-   - Admin: `username: admin, password: admin`
-   - User: `username: user, password: user`
-4. Navigate to "API Demo" in the sidebar
+```bash
+npm run docker:logs       # View all logs
+npm run docker:build      # Build containers
+npm run lint             # ESLint check
+npm run lint:fix         # ESLint auto-fix
+npm run format           # Prettier format
+```
 
-## Proxy Configuration
+## 🌐 Service URLs
 
-The frontend automatically proxies API calls from `/api/*` to the backend server at `http://localhost:3000`. This is configured in `vite.config.js`.
+Once started, access your services at:
 
-## Troubleshooting
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:3000
+- **Database**: localhost:5432 (via pgAdmin or psql)
+- **API Documentation**: http://localhost:3000/api/docs
 
-### Port Already in Use
+## 🔥 Hot Reloading
 
-If you get port conflicts:
+Both frontend and backend support hot reloading:
 
-- Kill any existing Node.js processes
-- Use the automated launchers which handle this better
-- Check what's using the ports: `netstat -ano | findstr :3000` or `netstat -ano | findstr :5173`
+- **Frontend**: Vite automatically reloads on file changes
+- **Backend**: Nodemon restarts server on file changes
+- **Database**: Migrations run automatically on startup
 
-### Frontend Not Updating
+## 🐛 Troubleshooting
 
-If the frontend doesn't reflect your changes:
+### Docker Issues
 
-- Make sure you're accessing http://localhost:5173 (not 3000)
-- Check the frontend terminal for build errors
-- Try refreshing the browser or clearing cache
+```bash
+# Check Docker status
+docker --version
+docker-compose --version
 
-### API Calls Failing
+# Restart Docker Desktop
+# Then run:
+npm run docker:clean
+npm run dev:docker
+```
 
-- Ensure backend is running on port 3000
-- Check the browser's Network tab for failed requests
-- Verify the proxy configuration in `vite.config.js`
+### Database Issues
+
+```bash
+# Reset database completely
+npm run docker:clean
+npm run dev:docker
+
+# Or manually:
+npm run db:reset
+```
+
+### Port Conflicts
+
+If ports are already in use:
+
+```bash
+# Check what's using the ports
+netstat -ano | findstr :3000
+netstat -ano | findstr :5173
+netstat -ano | findstr :5432
+
+# Kill the processes or change ports in docker-compose.dev.yml
+```
+
+### Environment Issues
+
+```bash
+# Recreate .env file
+rm .env
+npm run dev:start
+```
+
+## 📁 File Structure
+
+```
+QSData/
+├── client/                 # Frontend React app
+│   ├── src/
+│   │   ├── components/    # React components
+│   │   ├── hooks/        # Custom hooks
+│   │   ├── lib/          # Utilities
+│   │   └── types/        # TypeScript types
+│   └── index.html
+├── controllers/           # Backend controllers
+├── models/               # Database models
+├── routes/               # API routes
+├── scripts/              # Utility scripts
+├── tests/                # Test files
+├── docker-compose.dev.yml # Development environment
+└── package.json
+```
+
+## 🔒 Environment Variables
+
+The `.env` file is automatically created with default values:
+
+```env
+# Database Configuration
+POSTGRES_PASSWORD=postgres
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/qsdata
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+
+# Client Configuration
+CLIENT_ORIGIN=http://localhost:5173
+
+# Environment
+NODE_ENV=development
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+```
+
+## 🧪 Testing
+
+### Run Tests
+
+```bash
+npm test                  # All tests
+npm run test:api         # API tests only
+npm run test:quick       # Health check
+```
+
+### Test Credentials
+
+- **Admin**: username: `admin`, password: `admin`
+- **User**: username: `user`, password: `user`
+
+## 🚀 Production
+
+For production deployment, use the main `docker-compose.yml`:
+
+```bash
+docker-compose up --build
+```
+
+## 📚 Additional Resources
+
+- [API Documentation](http://localhost:3000/api/docs)
+- [Database Schema](./db/schema.sql)
+- [TypeScript Configuration](./tsconfig.json)
+- [Tailwind Configuration](./tailwind.config.js)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests: `npm test`
+5. Submit a pull request
+
+## 📞 Support
+
+If you encounter issues:
+
+1. Check the troubleshooting section above
+2. Review the logs: `npm run docker:logs`
+3. Create an issue with detailed error information

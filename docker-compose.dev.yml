@@ -1,48 +1,86 @@
+version: '3.8'
+
 services:
   db:
-    image: postgres:14
+    image: postgres:14-alpine
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: qsdata
     volumes:
       - db-data:/var/lib/postgresql/data
-    # Database port exposure for local development
     ports:
       - '5432:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - qsdata-network
+
   server:
-    image: node:18
+    image: node:18-alpine
     working_dir: /app
-    command: sh -c "npm install && npm run client:build && npm run dev"
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        while ! nc -z db 5432; do sleep 1; done &&
+        echo 'Database is ready!' &&
+        npm install &&
+        npm run db:setup &&
+        npm run dev
+      "
     volumes:
       - .:/app
+      - /app/node_modules
     ports:
       - '3000:3000'
     environment:
-      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@db:5432/qsdata
-      - JWT_SECRET=${JWT_SECRET}
-      - CLIENT_ORIGIN=${CLIENT_ORIGIN}
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/qsdata
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+      - CLIENT_ORIGIN=${CLIENT_ORIGIN:-http://localhost:5173}
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=1
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME=qsdata
       - DB_USER=postgres
-      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - qsdata-network
+
   client:
-    image: node:18
+    image: node:18-alpine
     working_dir: /app
-    command: sh -c "npm install && npm run client"
+    command: >
+      sh -c "
+        echo 'Waiting for server...' &&
+        while ! nc -z server 3000; do sleep 1; done &&
+        echo 'Server is ready!' &&
+        npm install &&
+        npm run client
+      "
     volumes:
       - .:/app
+      - /app/node_modules
     ports:
       - '5173:5173'
     environment:
       - CHOKIDAR_USEPOLLING=1
+      - VITE_API_URL=http://localhost:3000
     depends_on:
       - server
+    networks:
+      - qsdata-network
+
 volumes:
   db-data:
+
+networks:
+  qsdata-network:
+    driver: bridge
