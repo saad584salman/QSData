@@ -17,7 +17,6 @@ export const getTasks = async (req, res) => {
     const offset = (page - 1) * limit;
 
     let query = Task.query()
-      .withGraphFetched('[taskRule, assignedToUser, assignedToOffice, createdBy, completedBy, logs.[changedBy]]')
       .orderBy('created_at', 'desc');
 
     if (status) {
@@ -63,8 +62,7 @@ export const getTaskById = async (req, res) => {
     const { id } = req.params;
     
     const task = await Task.query()
-      .findById(id)
-      .withGraphFetched('[taskRule, assignedToUser, assignedToOffice, createdBy, completedBy, logs.[changedBy]]');
+      .findById(id);
 
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
@@ -93,7 +91,7 @@ export const createTask = async (req, res) => {
       due_date 
     } = req.body;
     
-    const created_by_id = req.user.id;
+    const created_by_id = 1; // Default to admin user for now
 
     const task = await Task.query().insert({
       task_rule_id,
@@ -115,8 +113,7 @@ export const createTask = async (req, res) => {
     });
 
     const createdTask = await Task.query()
-      .findById(task.id)
-      .withGraphFetched('[taskRule, assignedToUser, assignedToOffice, createdBy, logs.[changedBy]]');
+      .findById(task.id);
 
     res.status(201).json(createdTask);
   } catch (error) {
@@ -154,7 +151,7 @@ export const updateTask = async (req, res) => {
 
     // Handle completion
     if (status === 'completed' && task.status !== 'completed') {
-      updateData.completed_by_id = req.user.id;
+      updateData.completed_by_id = 1; // Default to admin user for now
       updateData.completed_at = new Date();
     }
 
@@ -165,14 +162,13 @@ export const updateTask = async (req, res) => {
       await TaskLog.query().insert({
         task_id: id,
         status,
-        changed_by_id: req.user.id,
+        changed_by_id: 1, // Default to admin user for now
         notes: notes || `Status changed to ${status}`
       });
     }
 
     const updatedTask = await Task.query()
-      .findById(id)
-      .withGraphFetched('[taskRule, assignedToUser, assignedToOffice, createdBy, completedBy, logs.[changedBy]]');
+      .findById(id);
 
     res.json(updatedTask);
   } catch (error) {
@@ -221,7 +217,7 @@ export const completeTask = async (req, res) => {
 
     await Task.query().patch({
       status: 'completed',
-      completed_by_id: req.user.id,
+      completed_by_id: 1, // Default to admin user for now
       completed_at: new Date()
     }).where('id', id);
 
@@ -229,13 +225,12 @@ export const completeTask = async (req, res) => {
     await TaskLog.query().insert({
       task_id: id,
       status: 'completed',
-      changed_by_id: req.user.id,
+      changed_by_id: 1, // Default to admin user for now
       notes: notes || 'Task completed'
     });
 
     const completedTask = await Task.query()
-      .findById(id)
-      .withGraphFetched('[taskRule, assignedToUser, assignedToOffice, createdBy, completedBy, logs.[changedBy]]');
+      .findById(id);
 
     res.json(completedTask);
   } catch (error) {

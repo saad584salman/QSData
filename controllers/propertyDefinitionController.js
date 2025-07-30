@@ -8,7 +8,6 @@ export const getPropertyDefinitions = async (req, res) => {
     const offset = (page - 1) * limit;
 
     let query = PropertyDefinition.query()
-      .withGraphFetched('[createdBy, options]')
       .orderBy('created_at', 'desc');
 
     if (entity_type) {
@@ -38,8 +37,7 @@ export const getPropertyDefinitionById = async (req, res) => {
     const { id } = req.params;
     
     const propertyDefinition = await PropertyDefinition.query()
-      .findById(id)
-      .withGraphFetched('[createdBy, options]');
+      .findById(id);
 
     if (!propertyDefinition) {
       return res.status(404).json({ error: 'Property definition not found' });
@@ -68,7 +66,7 @@ export const createPropertyDefinition = async (req, res) => {
       options = []
     } = req.body;
     
-    const created_by_id = req.user.id;
+    const created_by_id = 1; // Default to admin user for now
 
     const propertyDefinition = await PropertyDefinition.query().insert({
       entity_type,
@@ -90,8 +88,7 @@ export const createPropertyDefinition = async (req, res) => {
     }
 
     const createdPropertyDefinition = await PropertyDefinition.query()
-      .findById(propertyDefinition.id)
-      .withGraphFetched('[createdBy, options]');
+      .findById(propertyDefinition.id);
 
     res.status(201).json(createdPropertyDefinition);
   } catch (error) {
@@ -148,8 +145,7 @@ export const updatePropertyDefinition = async (req, res) => {
     }
 
     const updatedPropertyDefinition = await PropertyDefinition.query()
-      .findById(id)
-      .withGraphFetched('[createdBy, options]');
+      .findById(id);
 
     res.json(updatedPropertyDefinition);
   } catch (error) {

@@ -39,7 +39,7 @@ export default class Project extends Model {
       },
       createdBy: {
         relation: Model.BelongsToOneRelation,
-        modelClass: () => import('./User.js').then(m => m.default),
+        modelClass: require('./User.js').default,
         join: {
           from: 'projects.created_by_id',
           to: 'users.id'
@@ -47,7 +47,7 @@ export default class Project extends Model {
       },
       entityProperties: {
         relation: Model.HasManyRelation,
-        modelClass: () => import('./EntityProperty.js').then(m => m.default),
+        modelClass: require('./EntityProperty.js').default,
         join: {
           from: 'projects.id',
           to: 'entity_properties.entity_id'
@@ -58,7 +58,7 @@ export default class Project extends Model {
       },
       tasks: {
         relation: Model.HasManyRelation,
-        modelClass: () => import('./Task.js').then(m => m.default),
+        modelClass: require('./Task.js').default,
         join: {
           from: 'projects.id',
           to: 'tasks.entity_id'

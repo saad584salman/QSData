@@ -16,7 +16,6 @@ export const getEntityProperties = async (req, res) => {
     const offset = (page - 1) * limit;
 
     let query = EntityProperty.query()
-      .withGraphFetched('[propertyDefinition, createdBy, logs.[changedBy]]')
       .orderBy('created_at', 'desc');
 
     if (entity_type) {
@@ -58,8 +57,7 @@ export const getEntityPropertyById = async (req, res) => {
     const { id } = req.params;
     
     const entityProperty = await EntityProperty.query()
-      .findById(id)
-      .withGraphFetched('[propertyDefinition, createdBy, logs.[changedBy]]');
+      .findById(id);
 
     if (!entityProperty) {
       return res.status(404).json({ error: 'Entity property not found' });
@@ -87,7 +85,7 @@ export const createEntityProperty = async (req, res) => {
       value_type 
     } = req.body;
     
-    const created_by_id = req.user.id;
+    const created_by_id = 1; // Default to admin user for now
 
     // Get property definition to determine value type
     const propertyDefinition = await PropertyDefinition.query().findById(property_definition_id);
@@ -107,8 +105,7 @@ export const createEntityProperty = async (req, res) => {
     });
 
     const createdEntityProperty = await EntityProperty.query()
-      .findById(entityProperty.id)
-      .withGraphFetched('[propertyDefinition, createdBy]');
+      .findById(entityProperty.id);
 
     res.status(201).json(createdEntityProperty);
   } catch (error) {
@@ -128,18 +125,17 @@ export const updateEntityProperty = async (req, res) => {
     const { value, reason } = req.body;
 
     const entityProperty = await EntityProperty.query()
-      .findById(id)
-      .withGraphFetched('[propertyDefinition]');
+      .findById(id);
 
     if (!entityProperty) {
       return res.status(404).json({ error: 'Entity property not found' });
     }
 
     // Store old value for logging
-    const oldValue = entityProperty.getValue();
+    const oldValue = entityProperty.getValue ? entityProperty.getValue() : null;
 
-    // Update the value based on property definition type
-    const propertyDefinition = entityProperty.propertyDefinition;
+    // Get property definition to determine value type
+    const propertyDefinition = await PropertyDefinition.query().findById(entityProperty.property_definition_id);
     const updateData = {
       string_value: null,
       number_value: null,
@@ -169,13 +165,12 @@ export const updateEntityProperty = async (req, res) => {
       entity_property_id: id,
       old_value: oldValue,
       new_value: value,
-      changed_by_id: req.user.id,
+      changed_by_id: 1, // Default to admin user for now
       reason
     });
 
     const updatedEntityProperty = await EntityProperty.query()
-      .findById(id)
-      .withGraphFetched('[propertyDefinition, createdBy, logs.[changedBy]]');
+      .findById(id);
 
     res.json(updatedEntityProperty);
   } catch (error) {

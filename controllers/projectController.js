@@ -9,7 +9,6 @@ export const getProjects = async (req, res) => {
     const offset = (page - 1) * limit;
 
     let query = Project.query()
-      .withGraphFetched('[createdBy, entityProperties.[propertyDefinition]]')
       .orderBy('created_at', 'desc');
 
     // Filter by property if specified
@@ -45,8 +44,7 @@ export const getProjectById = async (req, res) => {
     const { id } = req.params;
     
     const project = await Project.query()
-      .findById(id)
-      .withGraphFetched('[createdBy, entityProperties.[propertyDefinition], tasks.[taskRule, assignedToUser, assignedToOffice]]');
+      .findById(id);
 
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
@@ -67,7 +65,7 @@ export const createProject = async (req, res) => {
     }
 
     const { name, parent_project_id, properties = [] } = req.body;
-    const created_by_id = req.user.id; // Assuming user is attached by auth middleware
+    const created_by_id = 1; // Default to admin user for now
 
     const project = await Project.query().insert({
       name,
@@ -92,8 +90,7 @@ export const createProject = async (req, res) => {
     }
 
     const createdProject = await Project.query()
-      .findById(project.id)
-      .withGraphFetched('[createdBy, entityProperties.[propertyDefinition]]');
+      .findById(project.id);
 
     res.status(201).json(createdProject);
   } catch (error) {
@@ -161,8 +158,7 @@ export const updateProject = async (req, res) => {
     }
 
     const updatedProject = await Project.query()
-      .findById(id)
-      .withGraphFetched('[createdBy, entityProperties.[propertyDefinition]]');
+      .findById(id);
 
     res.json(updatedProject);
   } catch (error) {
