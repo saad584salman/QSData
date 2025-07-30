@@ -7,6 +7,7 @@ import {
   updatePropertyDefinition,
   deletePropertyDefinition
 } from '../controllers/propertyDefinitionController.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -22,10 +23,10 @@ const validatePropertyDefinition = [
 ];
 
 // Routes
-router.get('/', getPropertyDefinitions);
-router.get('/:id', getPropertyDefinitionById);
-router.post('/', validatePropertyDefinition, createPropertyDefinition);
-router.put('/:id', validatePropertyDefinition, updatePropertyDefinition);
-router.delete('/:id', deletePropertyDefinition);
+router.get('/', auth, getPropertyDefinitions);
+router.get('/:id', auth, getPropertyDefinitionById);
+router.post('/', auth, validatePropertyDefinition, createPropertyDefinition);
+router.put('/:id', auth, validatePropertyDefinition, updatePropertyDefinition);
+router.delete('/:id', auth, deletePropertyDefinition);
 
 export default router; 

@@ -7,13 +7,17 @@ import {
   updateProject,
   deleteProject
 } from '../controllers/projectController.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Validation middleware
 const validateProject = [
   body('name').notEmpty().withMessage('Project name is required'),
-  body('parent_project_id').optional().isInt().withMessage('Parent project ID must be an integer'),
+  body('parent_project_id').optional().custom((value) => {
+    if (value === null || value === undefined) return true;
+    return Number.isInteger(value) && value > 0;
+  }).withMessage('Parent project ID must be a positive integer or null'),
   body('properties').optional().isArray().withMessage('Properties must be an array'),
   body('properties.*.property_definition_id').optional().isInt().withMessage('Property definition ID must be an integer'),
   body('properties.*.value_type').optional().isIn(['string', 'number', 'date', 'boolean']).withMessage('Invalid value type'),
@@ -21,10 +25,10 @@ const validateProject = [
 ];
 
 // Routes
-router.get('/', getProjects);
-router.get('/:id', getProjectById);
-router.post('/', validateProject, createProject);
-router.put('/:id', validateProject, updateProject);
-router.delete('/:id', deleteProject);
+router.get('/', auth, getProjects);
+router.get('/:id', auth, getProjectById);
+router.post('/', auth, validateProject, createProject);
+router.put('/:id', auth, validateProject, updateProject);
+router.delete('/:id', auth, deleteProject);
 
 export default router; 

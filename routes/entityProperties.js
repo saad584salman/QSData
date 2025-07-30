@@ -7,6 +7,7 @@ import {
   updateEntityProperty,
   deleteEntityProperty
 } from '../controllers/entityPropertyController.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -25,10 +26,10 @@ const validateEntityPropertyUpdate = [
 ];
 
 // Routes
-router.get('/', getEntityProperties);
-router.get('/:id', getEntityPropertyById);
-router.post('/', validateEntityProperty, createEntityProperty);
-router.put('/:id', validateEntityPropertyUpdate, updateEntityProperty);
-router.delete('/:id', deleteEntityProperty);
+router.get('/', auth, getEntityProperties);
+router.get('/:id', auth, getEntityPropertyById);
+router.post('/', auth, validateEntityProperty, createEntityProperty);
+router.put('/:id', auth, validateEntityPropertyUpdate, updateEntityProperty);
+router.delete('/:id', auth, deleteEntityProperty);
 
 export default router; 

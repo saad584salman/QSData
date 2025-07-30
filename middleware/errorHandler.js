@@ -1,6 +1,14 @@
 export const errorHandler = (err, req, res, next) => {
   console.error('Error:', err);
 
+  // Handle JSON parsing errors
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({
+      error: 'Bad Request',
+      message: 'Invalid JSON format'
+    });
+  }
+
   // Handle validation errors
   if (err.name === 'ValidationError') {
     return res.status(400).json({

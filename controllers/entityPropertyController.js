@@ -10,10 +10,9 @@ export const getEntityProperties = async (req, res) => {
       entity_id, 
       property_definition_id, 
       string_value,
-      page = 1, 
-      limit = 10 
+      page, 
+      limit 
     } = req.query;
-    const offset = (page - 1) * limit;
 
     let query = EntityProperty.query()
       .orderBy('created_at', 'desc');
@@ -34,18 +33,39 @@ export const getEntityProperties = async (req, res) => {
       query = query.where('string_value', 'like', `%${string_value}%`);
     }
 
-    const entityProperties = await query.limit(limit).offset(offset);
-    const total = await EntityProperty.query().resultSize();
+    // If pagination parameters are provided, return paginated response
+    if (page && limit) {
+      const offset = (parseInt(page) - 1) * parseInt(limit);
+      const entityProperties = await query.limit(parseInt(limit)).offset(offset);
+      const total = await EntityProperty.query().resultSize();
 
-    res.json({
-      entityProperties,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
+      // Add computed value property
+      const entityPropertiesWithValue = entityProperties.map(ep => ({
+        ...ep,
+        value: ep.string_value || ep.number_value || ep.date_value || ep.bool_value
+      }));
+
+      return res.json({
+        entityProperties: entityPropertiesWithValue,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / parseInt(limit))
+        }
+      });
+    }
+
+    // Otherwise return all results as array
+    const entityProperties = await query;
+    
+    // Add computed value property
+    const entityPropertiesWithValue = entityProperties.map(ep => ({
+      ...ep,
+      value: ep.string_value || ep.number_value || ep.date_value || ep.bool_value
+    }));
+
+    res.json(entityPropertiesWithValue);
   } catch (error) {
     console.error('Error fetching entity properties:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -63,7 +83,13 @@ export const getEntityPropertyById = async (req, res) => {
       return res.status(404).json({ error: 'Entity property not found' });
     }
 
-    res.json(entityProperty);
+    // Add computed value property
+    const entityPropertyWithValue = {
+      ...entityProperty,
+      value: entityProperty.string_value || entityProperty.number_value || entityProperty.date_value || entityProperty.bool_value
+    };
+
+    res.json(entityPropertyWithValue);
   } catch (error) {
     console.error('Error fetching entity property:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -85,7 +111,7 @@ export const createEntityProperty = async (req, res) => {
       value_type 
     } = req.body;
     
-    const created_by_id = 1; // Default to admin user for now
+    const created_by_id = req.user?.id || 1; // Use authenticated user ID
 
     // Get property definition to determine value type
     const propertyDefinition = await PropertyDefinition.query().findById(property_definition_id);
@@ -107,7 +133,13 @@ export const createEntityProperty = async (req, res) => {
     const createdEntityProperty = await EntityProperty.query()
       .findById(entityProperty.id);
 
-    res.status(201).json(createdEntityProperty);
+    // Add computed value property
+    const entityPropertyWithValue = {
+      ...createdEntityProperty,
+      value: createdEntityProperty.string_value || createdEntityProperty.number_value || createdEntityProperty.date_value || createdEntityProperty.bool_value
+    };
+
+    res.status(201).json(entityPropertyWithValue);
   } catch (error) {
     console.error('Error creating entity property:', error);
     res.status(500).json({ error: 'Internal server error' });

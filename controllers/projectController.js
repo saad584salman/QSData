@@ -17,7 +17,7 @@ export const getProjects = async (req, res) => {
         .joinRelated('entityProperties')
         .joinRelated('entityProperties.propertyDefinition')
         .where('entityProperties.entity_type', entity_type)
-        .where('propertyDefinitions.property_key', property)
+        .where('entityProperties:propertyDefinition.property_key', property)
         .where('entityProperties.string_value', value);
     }
 
@@ -44,7 +44,8 @@ export const getProjectById = async (req, res) => {
     const { id } = req.params;
     
     const project = await Project.query()
-      .findById(id);
+      .findById(id)
+      .withGraphFetched('entityProperties.propertyDefinition');
 
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
@@ -65,7 +66,7 @@ export const createProject = async (req, res) => {
     }
 
     const { name, parent_project_id, properties = [] } = req.body;
-    const created_by_id = 1; // Default to admin user for now
+    const created_by_id = req.user?.id || 1; // Use authenticated user ID
 
     const project = await Project.query().insert({
       name,

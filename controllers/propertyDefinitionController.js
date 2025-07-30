@@ -4,8 +4,7 @@ import { validationResult } from 'express-validator';
 
 export const getPropertyDefinitions = async (req, res) => {
   try {
-    const { entity_type, page = 1, limit = 10 } = req.query;
-    const offset = (page - 1) * limit;
+    const { entity_type, page, limit } = req.query;
 
     let query = PropertyDefinition.query()
       .orderBy('created_at', 'desc');
@@ -14,18 +13,26 @@ export const getPropertyDefinitions = async (req, res) => {
       query = query.where('entity_type', entity_type);
     }
 
-    const propertyDefinitions = await query.limit(limit).offset(offset);
-    const total = await PropertyDefinition.query().resultSize();
+    // If pagination parameters are provided, return paginated response
+    if (page && limit) {
+      const offset = (parseInt(page) - 1) * parseInt(limit);
+      const propertyDefinitions = await query.limit(parseInt(limit)).offset(offset);
+      const total = await PropertyDefinition.query().resultSize();
 
-    res.json({
-      propertyDefinitions,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
+      return res.json({
+        propertyDefinitions,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / parseInt(limit))
+        }
+      });
+    }
+
+    // Otherwise return all results as array
+    const propertyDefinitions = await query;
+    res.json(propertyDefinitions);
   } catch (error) {
     console.error('Error fetching property definitions:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -66,7 +73,7 @@ export const createPropertyDefinition = async (req, res) => {
       options = []
     } = req.body;
     
-    const created_by_id = 1; // Default to admin user for now
+    const created_by_id = req.user?.id || 1; // Use authenticated user ID
 
     const propertyDefinition = await PropertyDefinition.query().insert({
       entity_type,

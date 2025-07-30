@@ -11,10 +11,9 @@ export const getTasks = async (req, res) => {
       assigned_to_office_id,
       entity_type,
       entity_id,
-      page = 1, 
-      limit = 10 
+      page, 
+      limit 
     } = req.query;
-    const offset = (page - 1) * limit;
 
     let query = Task.query()
       .orderBy('created_at', 'desc');
@@ -39,18 +38,26 @@ export const getTasks = async (req, res) => {
       query = query.where('entity_id', entity_id);
     }
 
-    const tasks = await query.limit(limit).offset(offset);
-    const total = await Task.query().resultSize();
+    // If pagination parameters are provided, return paginated response
+    if (page && limit) {
+      const offset = (parseInt(page) - 1) * parseInt(limit);
+      const tasks = await query.limit(parseInt(limit)).offset(offset);
+      const total = await Task.query().resultSize();
 
-    res.json({
-      tasks,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
+      return res.json({
+        tasks,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / parseInt(limit))
+        }
+      });
+    }
+
+    // Otherwise return all results as array
+    const tasks = await query;
+    res.json(tasks);
   } catch (error) {
     console.error('Error fetching tasks:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -91,7 +98,7 @@ export const createTask = async (req, res) => {
       due_date 
     } = req.body;
     
-    const created_by_id = 1; // Default to admin user for now
+    const created_by_id = req.user?.id || 1; // Use authenticated user ID
 
     const task = await Task.query().insert({
       task_rule_id,

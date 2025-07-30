@@ -8,6 +8,7 @@ import {
   deleteTask,
   completeTask
 } from '../controllers/taskController.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -34,11 +35,11 @@ const validateTaskCompletion = [
 ];
 
 // Routes
-router.get('/', getTasks);
-router.get('/:id', getTaskById);
-router.post('/', validateTask, createTask);
-router.put('/:id', validateTaskUpdate, updateTask);
-router.delete('/:id', deleteTask);
-router.post('/:id/complete', validateTaskCompletion, completeTask);
+router.get('/', auth, getTasks);
+router.get('/:id', auth, getTaskById);
+router.post('/', auth, validateTask, createTask);
+router.put('/:id', auth, validateTaskUpdate, updateTask);
+router.delete('/:id', auth, deleteTask);
+router.post('/:id/complete', auth, validateTaskCompletion, completeTask);
 
 export default router; 

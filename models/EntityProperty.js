@@ -1,4 +1,7 @@
 import { Model } from 'objection';
+import PropertyDefinition from './PropertyDefinition.js';
+import User from './User.js';
+import EntityPropertyLog from './EntityPropertyLog.js';
 
 export default class EntityProperty extends Model {
   static get tableName() {
@@ -25,10 +28,6 @@ export default class EntityProperty extends Model {
   }
 
   static get relationMappings() {
-    const PropertyDefinition = require('./PropertyDefinition.js').default;
-    const User = require('./User.js').default;
-    const EntityPropertyLog = require('./EntityPropertyLog.js').default;
-    
     return {
       propertyDefinition: {
         relation: Model.BelongsToOneRelation,

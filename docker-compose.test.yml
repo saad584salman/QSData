@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  test-db:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: qsdata_test
+    volumes:
+      - test-db-data:/var/lib/postgresql/data
+    ports:
+      - '5433:5432'  # Different port to avoid conflicts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-network
+
+  test-server:
+    image: node:18-alpine
+    working_dir: /app
+    command: >
+      sh -c "
+        echo 'Waiting for test database...' &&
+        while ! nc -z test-db 5432; do sleep 1; done &&
+        echo 'Test database is ready!' &&
+        npm install &&
+        npm run db:migrate &&
+        npm run test:local
+      "
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=test
+      - JWT_SECRET=test-secret-key-for-jwt-signing
+      - DB_HOST=test-db
+      - DB_PORT=5432
+      - DB_NAME_TEST=qsdata_test
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DATABASE_URL=postgres://postgres:postgres@test-db:5432/qsdata_test
+    depends_on:
+      test-db:
+        condition: service_healthy
+    networks:
+      - test-network
+
+volumes:
+  test-db-data:
+
+networks:
+  test-network:
+    driver: bridge 

@@ -26,7 +26,7 @@ export default {
       port: process.env.DB_PORT || 5432,
       database: process.env.DB_NAME_TEST || 'qsdata_test',
       user: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'password',
+      password: process.env.DB_PASSWORD || 'devpassword',
     },
     migrations: {
       directory: './migrations',

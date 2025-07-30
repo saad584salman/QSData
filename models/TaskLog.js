@@ -1,4 +1,6 @@
 import { Model } from 'objection';
+import Task from './Task.js';
+import User from './User.js';
 
 export default class TaskLog extends Model {
   static get tableName() {
@@ -21,9 +23,6 @@ export default class TaskLog extends Model {
   }
 
   static get relationMappings() {
-    const Task = require('./Task.js').default;
-    const User = require('./User.js').default;
-    
     return {
       task: {
         relation: Model.BelongsToOneRelation,
