@@ -218,8 +218,8 @@ const ApiDemo = () => {
                   placeholder="Enter password"
                 />
               </div>
-              <button onClick={handleLogin} disabled={loading['/auth/login']}>
-                {loading['/auth/login'] ? 'Logging in...' : 'Login'}
+              <button onClick={handleLogin} disabled={loading['POST /auth/login']}>
+                {loading['POST /auth/login'] ? 'Logging in...' : 'Login'}
               </button>
               {token && (
                 <div className="token-info">
