@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "allowJs": true,
@@ -21,8 +21,18 @@
       "@/middleware/*": ["./middleware/*"],
       "@/routes/*": ["./routes/*"],
       "@/config/*": ["./config/*"],
-      "@/types/*": ["./types/*"]
-    }
+      "@/types/*": ["./types/*"],
+      "@/components/*": ["./client/src/components/*"],
+      "@/hooks/*": ["./client/src/hooks/*"],
+      "@/lib/*": ["./client/src/lib/*"],
+      "@/services/*": ["./client/src/services/*"]
+    },
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true
   },
   "include": [
     "**/*.ts",
