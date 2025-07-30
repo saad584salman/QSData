@@ -152,9 +152,23 @@ const ApiDemo = () => {
         { name: 'assigned_to_office_id', label: 'Assigned Office ID', type: 'number' },
         { name: 'due_date', label: 'Due Date', type: 'date' }
       ],
+      progress: [
+        { name: 'entity_type', label: 'Entity Type', type: 'text', required: true },
+        { name: 'entity_id', label: 'Entity ID', type: 'number', required: true },
+        { name: 'progress_data', label: 'Progress Data (JSON)', type: 'textarea', required: true }
+      ],
+      'psdp-projects': [
+        { name: 'project_id', label: 'Project ID', type: 'number', required: true }
+      ],
       'sap-projects': [
         { name: 'sr_no', label: 'SR Number', type: 'number', required: true }
-      ]
+      ],
+      'zone-summary': [
+        { name: 'zone_id', label: 'Zone ID', type: 'number' },
+        { name: 'date_from', label: 'Date From', type: 'date' },
+        { name: 'date_to', label: 'Date To', type: 'date' }
+      ],
+      health: []
     };
     return fields[tabId] || [];
   };
