@@ -5,8 +5,8 @@ dotenv.config();
 export default {
   development: {
     client: 'postgresql',
-    connection: {
-      host: process.env.DB_HOST || 'localhost',
+    connection: process.env.DATABASE_URL || {
+      host: process.env.DB_HOST || 'db',
       port: process.env.DB_PORT || 5432,
       database: process.env.DB_NAME || 'qsdata',
       user: process.env.DB_USER || 'postgres',
