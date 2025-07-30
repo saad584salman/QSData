@@ -1,11 +1,9 @@
 import bcrypt from 'bcryptjs';
 
 export function seed(knex) {
-  return knex('users').del()
-    .then(async () => {
-      const passwordHash = await bcrypt.hash('password123', 10);
-      
-      return knex('users').insert([
+  return bcrypt.hash('password123', 10)
+    .then(passwordHash => {
+      const users = [
         {
           id: 1,
           full_name: 'Admin User',
@@ -33,6 +31,11 @@ export function seed(knex) {
           office_id: 3,
           created_at: new Date()
         }
-      ]);
+      ];
+
+      return knex('users')
+        .insert(users)
+        .onConflict('id')
+        .merge(['full_name', 'email', 'password_hash', 'role_id', 'office_id', 'created_at']);
     });
 } 

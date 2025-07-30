@@ -1,4 +1,7 @@
 import { Model } from 'objection';
+import User from './User.js';
+import EntityProperty from './EntityProperty.js';
+import Task from './Task.js';
 
 export default class Project extends Model {
   static get tableName() {
@@ -39,7 +42,7 @@ export default class Project extends Model {
       },
       createdBy: {
         relation: Model.BelongsToOneRelation,
-        modelClass: require('./User.js').default,
+        modelClass: User,
         join: {
           from: 'projects.created_by_id',
           to: 'users.id'
@@ -47,7 +50,7 @@ export default class Project extends Model {
       },
       entityProperties: {
         relation: Model.HasManyRelation,
-        modelClass: require('./EntityProperty.js').default,
+        modelClass: EntityProperty,
         join: {
           from: 'projects.id',
           to: 'entity_properties.entity_id'
@@ -58,7 +61,7 @@ export default class Project extends Model {
       },
       tasks: {
         relation: Model.HasManyRelation,
-        modelClass: require('./Task.js').default,
+        modelClass: Task,
         join: {
           from: 'projects.id',
           to: 'tasks.entity_id'

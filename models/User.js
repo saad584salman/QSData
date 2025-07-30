@@ -1,4 +1,12 @@
 import { Model } from 'objection';
+import Role from './Role.js';
+import Office from './Office.js';
+import Project from './Project.js';
+import PropertyDefinition from './PropertyDefinition.js';
+import EntityProperty from './EntityProperty.js';
+import Task from './Task.js';
+import TaskLog from './TaskLog.js';
+import ApprovalRequest from './ApprovalRequest.js';
 
 export default class User extends Model {
   static get tableName() {
@@ -22,15 +30,6 @@ export default class User extends Model {
   }
 
   static get relationMappings() {
-    const Role = require('./Role.js').default;
-    const Office = require('./Office.js').default;
-    const Project = require('./Project.js').default;
-    const PropertyDefinition = require('./PropertyDefinition.js').default;
-    const EntityProperty = require('./EntityProperty.js').default;
-    const Task = require('./Task.js').default;
-    const TaskLog = require('./TaskLog.js').default;
-    const ApprovalRequest = require('./ApprovalRequest.js').default;
-    
     return {
       role: {
         relation: Model.BelongsToOneRelation,
