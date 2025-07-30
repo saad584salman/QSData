@@ -1,0 +1,356 @@
+.endpoint-docs {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.endpoint-docs h2 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.endpoint-docs > p {
+  color: #7f8c8d;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.docs-container {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.docs-sidebar {
+  background: #f8f9fa;
+  padding: 25px;
+  border-right: 1px solid #e9ecef;
+}
+
+.docs-sidebar h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-btn {
+  padding: 12px 16px;
+  border: none;
+  background: white;
+  color: #495057;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: left;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.category-btn:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.category-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #0056b3;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.docs-content {
+  padding: 30px;
+}
+
+.category-header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.category-header h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+}
+
+.category-header p {
+  color: #6c757d;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.endpoints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.endpoint-doc {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  transition: box-shadow 0.3s ease;
+}
+
+.endpoint-doc:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.endpoint-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  flex-wrap: wrap;
+}
+
+.method-badge {
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  min-width: 60px;
+  text-align: center;
+}
+
+.endpoint-path {
+  font-family: 'Courier New', monospace;
+  background: #e9ecef;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #495057;
+  font-weight: 500;
+}
+
+.endpoint-description {
+  flex: 1;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.endpoint-details {
+  padding: 20px;
+}
+
+.detail-section {
+  margin-bottom: 25px;
+}
+
+.detail-section h5 {
+  color: #495057;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 5px;
+}
+
+.params-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.param-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.param-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-family: 'Courier New', monospace;
+}
+
+.param-type {
+  color: #6c757d;
+  font-size: 0.8rem;
+  font-family: 'Courier New', monospace;
+}
+
+.response-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.response-example {
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.response-example.success {
+  border-left: 4px solid #28a745;
+}
+
+.response-example.error {
+  border-left: 4px solid #dc3545;
+}
+
+.response-example h6 {
+  margin: 0;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.response-example.success h6 {
+  background: #d4edda;
+  color: #155724;
+}
+
+.response-example.error h6 {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.response-example pre {
+  margin: 0;
+  padding: 15px;
+  background: #2d3748;
+  color: #e2e8f0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.example-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.example-request,
+.example-response {
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.example-request h6,
+.example-response h6 {
+  margin: 0;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.example-request pre,
+.example-response pre {
+  margin: 0;
+  padding: 15px;
+  background: #f8f9fa;
+  color: #495057;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .docs-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .docs-sidebar {
+    border-right: none;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .category-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .category-btn {
+    flex: 1;
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .endpoint-docs {
+    padding: 10px;
+  }
+  
+  .endpoint-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .example-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .docs-content {
+    padding: 20px;
+  }
+}
+
+/* Scrollbar styling */
+.response-example pre::-webkit-scrollbar,
+.example-request pre::-webkit-scrollbar,
+.example-response pre::-webkit-scrollbar {
+  width: 8px;
+}
+
+.response-example pre::-webkit-scrollbar-track,
+.example-request pre::-webkit-scrollbar-track,
+.example-response pre::-webkit-scrollbar-track {
+  background: #1a202c;
+}
+
+.response-example pre::-webkit-scrollbar-thumb,
+.example-request pre::-webkit-scrollbar-thumb,
+.example-response pre::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 4px;
+}
+
+.response-example pre::-webkit-scrollbar-thumb:hover,
+.example-request pre::-webkit-scrollbar-thumb:hover,
+.example-response pre::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+} 

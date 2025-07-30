@@ -1,5 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
+import ApiDemo from './components/ApiDemo.jsx';
+import './components/ApiDemo.css';
+import DatabaseSchema from './components/DatabaseSchema.jsx';
+import './components/DatabaseSchema.css';
+import EndpointDocs from './components/EndpointDocs.jsx';
+import './components/EndpointDocs.css';
 
 function Login() {
   const [username, setUsername] = React.useState('');
@@ -95,6 +101,9 @@ function Layout({ children }) {
             <li><Link to="/projects">Projects</Link></li>
             <li><Link to="/projects/new">Add Project</Link></li>
             <li><Link to="/progress">Progress</Link></li>
+            <li><Link to="/api-demo">API Demo</Link></li>
+            <li><Link to="/database-schema">Database Schema</Link></li>
+            <li><Link to="/endpoint-docs">API Documentation</Link></li>
           </ul>
         </nav>
       </aside>
@@ -190,6 +199,9 @@ export default function App() {
         <Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
         <Route path="/projects/new" element={<PrivateRoute><AddProject /></PrivateRoute>} />
         <Route path="/progress" element={<PrivateRoute><Progress /></PrivateRoute>} />
+        <Route path="/api-demo" element={<PrivateRoute><ApiDemo /></PrivateRoute>} />
+        <Route path="/database-schema" element={<PrivateRoute><DatabaseSchema /></PrivateRoute>} />
+        <Route path="/endpoint-docs" element={<PrivateRoute><EndpointDocs /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   );
