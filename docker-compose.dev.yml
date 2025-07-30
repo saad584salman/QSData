@@ -8,9 +8,9 @@ services:
       POSTGRES_DB: qsdata
     volumes:
       - db-data:/var/lib/postgresql/data
-    # REMOVED: Database port exposure for security
-    # ports:
-    #   - '5432:5432'
+    # Database port exposure for local development
+    ports:
+      - '5432:5432'
   server:
     image: node:18
     working_dir: /app
@@ -20,11 +20,16 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@db:5432/qsdata
       - JWT_SECRET=${JWT_SECRET}
       - CLIENT_ORIGIN=${CLIENT_ORIGIN}
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=1
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=qsdata
+      - DB_USER=postgres
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
     depends_on:
       - db
   client:

@@ -4,32 +4,72 @@ import { BrowserRouter, Routes, Route, Link, Navigate, useNavigate } from 'react
 function Login() {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
   const navigate = useNavigate();
+  
   const submit = async e => {
     e.preventDefault();
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    if (res.ok) {
-      const data = await res.json();
-      localStorage.setItem('token', data.token);
-      if (data.role) localStorage.setItem('role', data.role);
-      navigate('/dashboard');
-    } else {
-      alert('Invalid credentials');
+    setError('');
+    setIsLoading(true);
+    
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('token', data.token);
+        if (data.role) localStorage.setItem('role', data.role);
+        navigate('/dashboard');
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        setError(errorData.error || 'Invalid credentials');
+      }
+    } catch (err) {
+      setError('Network error. Please check your connection.');
+    } finally {
+      setIsLoading(false);
     }
   };
+  
   return (
     <div className="login-container">
-      <h2>Login</h2>
+      <h2>QSData Login</h2>
+      <div className="dev-credentials">
+        <h3>Development Credentials:</h3>
+        <ul>
+          <li><strong>Admin:</strong> username: <code>admin</code>, password: <code>admin</code></li>
+          <li><strong>User:</strong> username: <code>user</code>, password: <code>user</code></li>
+        </ul>
+      </div>
       <form onSubmit={submit}>
-        <label>Username</label>
-        <input value={username} onChange={e => setUsername(e.target.value)} />
-        <label>Password</label>
-        <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-        <button type="submit">Login</button>
+        <div className="form-group">
+          <label>Username</label>
+          <input 
+            value={username} 
+            onChange={e => setUsername(e.target.value)}
+            disabled={isLoading}
+            placeholder="Enter username"
+          />
+        </div>
+        <div className="form-group">
+          <label>Password</label>
+          <input 
+            type="password" 
+            value={password} 
+            onChange={e => setPassword(e.target.value)}
+            disabled={isLoading}
+            placeholder="Enter password"
+          />
+        </div>
+        {error && <div className="error-message">{error}</div>}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
     </div>
   );

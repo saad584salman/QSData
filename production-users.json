@@ -1,0 +1,20 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "passwordHash": "your-bcrypt-hash-here",
+      "role": "master",
+      "email": "admin@yourdomain.com",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "username": "manager",
+      "passwordHash": "your-bcrypt-hash-here",
+      "role": "originator",
+      "email": "manager@yourdomain.com",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "isActive": true
+    }
+  ]
+} 

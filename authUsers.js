@@ -3,12 +3,16 @@
 export default [
   { 
     username: 'admin', 
-    passwordHash: '$2b$10$UJlWhn/sc355G5g6clSyd.s1DAFMtj85MLvRpDIZTEpjWCN8.Ztv6', 
+    passwordHash: '$2b$10$vdf5rb1Fv2d8xekCZaWGs..UH4hKmC8Kw2PTjpOMhGhJWqFP1j/JK', 
     role: 'master' 
   },
   { 
     username: 'user', 
-    passwordHash: '$2b$10$KLlbWq0KV5h11YP.z8vWGuTssNIAsUMzHbOam2UsyVip3/02Y7loK', 
+    passwordHash: '$2b$10$N/gVFkHLyjmjppiyii/l7uL2MqOkiVdQfou59Arm.oKDOZKRyNmmm', 
     role: 'originator' 
   }
 ];
+
+// Development credentials:
+// admin / admin
+// user / user

@@ -1,160 +1,365 @@
-# QSData
+# QSData - PERN Stack with EAV Pattern
 
-QSData is a secure PERN stack application for managing Pakistan PWD project data.
-It implements JWT authentication, role-based access control, and several project tables with enhanced security features.
+A comprehensive PERN-stack (PostgreSQL, Express, React, Node.js) application implementing a flexible Entity-Attribute-Value (EAV) pattern for dynamic data management, task workflows, and approval systems.
 
-## 🔒 Security Features
+## 🏗️ Architecture
 
-- **JWT Authentication** with secure token management
-- **Role-based Access Control** (master, originator, senior roles)
-- **Enhanced Security Headers** (Helmet, CORS, CSP)
-- **Rate Limiting** to prevent abuse
-- **SQL Injection Protection** with parameterized queries
-- **Password Hashing** with bcrypt
-- **Environment Variable Security** - no hardcoded secrets
-- **Database Port Isolation** - database not exposed externally
+### Database Design
 
-## 🚀 Features
+- **EAV Pattern**: Fully flexible entity-property system
+- **Task Management**: Rules-based task generation and tracking
+- **Approval Workflow**: Multi-level approval system
+- **Audit Logging**: Complete change history tracking
+- **Materialized Views**: Optimized data exports
 
-- Express API built with Node.js
-- PostgreSQL database with persistent storage
-- React frontend with modern UI
-- Docker and Docker Compose support
-- Hot reloading for development
-- CI pipeline via GitHub Actions
-- Jest tests and ESLint
+### Key Features
 
-## 📋 Requirements
+- ✅ **Dynamic Properties**: Define custom properties for any entity type
+- ✅ **Task Automation**: Rule-based task generation and assignment
+- ✅ **Approval Workflows**: Multi-level approval system with audit trails
+- ✅ **Role-Based Access**: Hierarchical permissions system
+- ✅ **Audit Logging**: Complete change history for all properties
+- ✅ **Performance Optimized**: Indexed queries and materialized views
+- ✅ **TypeScript Ready**: Full TypeScript support with type definitions
+- ✅ **Modern Tooling**: ESLint, Prettier, Jest testing
+
+## 🚀 Quick Start
+
+### Prerequisites
 
 - Node.js 18+
 - Docker and Docker Compose
-- PostgreSQL (included in Docker setup)
+- npm or yarn
 
-## 🛠️ Setup
+### Installation
 
-### 1. Environment Configuration
-
-Create a `.env` file in the project root:
+1. **Clone and Install**
 
 ```bash
-# Generate JWT secret: openssl rand -base64 64
-JWT_SECRET=your-super-secret-jwt-key-here
-DATABASE_URL=postgres://postgres:your-password@db:5432/qsdata
-POSTGRES_PASSWORD=your-strong-database-password
-CLIENT_ORIGIN=http://localhost:5173
-NODE_ENV=development
-PORT=3000
-RATE_LIMIT_WINDOW_MS=60000
-RATE_LIMIT_MAX_REQUESTS=100
-```
-
-### 2. Development Setup
-
-```bash
-# Install dependencies
+git clone <repository-url>
+cd QSData
 npm install
+```
 
-# Start with hot reloading (recommended for development)
+2. **Development Setup**
+
+```bash
+# Run the development setup script
+node scripts/setup-dev.js
+```
+
+3. **Start with Docker (Recommended)**
+
+```bash
+# Start all services (database, backend, frontend)
 docker-compose -f docker-compose.dev.yml up --build
 ```
 
-### 3. Production Setup
+4. **Access the Application**
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3000
+
+### Development Login Credentials
+
+- **Admin User**: username: `admin`, password: `admin`
+- **Regular User**: username: `user`, password: `user`
+
+### Alternative: Local Development
 
 ```bash
-# Build and start production containers
-docker-compose up --build
+# Environment Setup
+cp env.example .env
+# Edit .env with your database credentials
+
+# Database Setup
+npm run db:migrate
+npm run db:seed
+npm run refresh-exports
+
+# Start Development
+npm run dev          # Backend
+npm run client       # Frontend (in another terminal)
 ```
 
-## 🔐 Authentication
+## 🚀 Production Deployment
 
-### Development Users
-- **Admin**: `admin` / `admin` (master role)
-- **User**: `user` / `user` (originator role)
+### VPS Setup
 
-### Adding New Users
-Users are managed in `authUsers.js`. To add a new user:
-
-1. Generate password hash:
-```bash
-node -e "const bcrypt = require('bcryptjs'); bcrypt.hash('your-password', 10).then(hash => console.log(hash))"
-```
-
-2. Add to `authUsers.js`:
-```javascript
-{ 
-  username: 'newuser', 
-  passwordHash: 'generated-hash-here', 
-  role: 'originator' 
-}
-```
-
-## 🌐 Access Points
-
-- **Frontend**: http://localhost:3000 (production) or http://localhost:5173 (development)
-- **Backend API**: http://localhost:3000/api
-- **Database**: Internal only (not exposed externally)
-
-## 🔧 Development Commands
+1. **Clone Repository**
 
 ```bash
-# Development with hot reloading
-docker-compose -f docker-compose.dev.yml up --build
+git clone <repository-url> /opt/qsdata
+cd /opt/qsdata
+```
 
-# Production build
-docker-compose up --build
+2. **Environment Configuration**
 
-# Run tests
-npm test
+```bash
+# Copy production environment template
+cp production.env .env
+# Edit .env with your production values
+```
 
-# Database initialization
-npm run db:init
+3. **User Management**
 
-# Client build
-npm run client:build
+```bash
+# Copy production users template
+cp production-users.json users.json
+# Edit users.json with your production users
+```
+
+4. **Deploy with Docker**
+
+```bash
+docker-compose up -d
+```
+
+### Production Configuration
+
+- **Environment**: Use `production.env` as template
+- **Users**: Use `production-users.json` as template
+- **SSL**: Configure with Let's Encrypt
+- **Backups**: Set up automated database backups
+
+See `VPS_DEPLOYMENT.md` for complete production setup guide.
+
+## 📊 Database Schema
+
+### Core Tables
+
+#### Users & Roles
+
+- `roles` - User roles with hierarchy levels
+- `users` - User accounts with role and office assignments
+- `offices` - Organizational structure with parent-child relationships
+
+#### EAV System
+
+- `property_definitions` - Define custom properties for entities
+- `property_options` - Predefined options for property values
+- `entity_properties` - Store actual property values (EAV pattern)
+- `entity_property_logs` - Audit trail for property changes
+
+#### Task Management
+
+- `task_rules` - Define rules for automatic task generation
+- `tasks` - Individual task instances with assignments
+- `task_logs` - Task status change history
+
+#### Permissions & Approvals
+
+- `permissions` - Role and user-based access control
+- `approval_requests` - Multi-level approval workflow
+
+### Materialized Views
+
+- `project_export` - Optimized project data for reporting
+
+## 🔧 API Endpoints
+
+### Projects
+
+```
+GET    /api/projects                    # List projects with filtering
+GET    /api/projects/:id               # Get project details
+POST   /api/projects                   # Create new project
+PUT    /api/projects/:id               # Update project
+DELETE /api/projects/:id               # Delete project
+```
+
+### Property Definitions
+
+```
+GET    /api/property-definitions       # List property definitions
+GET    /api/property-definitions/:id   # Get property definition
+POST   /api/property-definitions       # Create property definition
+PUT    /api/property-definitions/:id   # Update property definition
+DELETE /api/property-definitions/:id   # Delete property definition
+```
+
+### Entity Properties
+
+```
+GET    /api/entity-properties          # List with filtering
+GET    /api/entity-properties/:id      # Get property details
+POST   /api/entity-properties          # Create property value
+PUT    /api/entity-properties/:id      # Update property value
+DELETE /api/entity-properties/:id      # Delete property value
+```
+
+### Tasks
+
+```
+GET    /api/tasks                      # List tasks with filtering
+GET    /api/tasks/:id                  # Get task details
+POST   /api/tasks                      # Create new task
+PUT    /api/tasks/:id                  # Update task
+DELETE /api/tasks/:id                  # Delete task
+POST   /api/tasks/:id/complete         # Mark task as complete
+```
+
+## 🛠️ Development
+
+### Database Commands
+
+```bash
+npm run db:migrate          # Run migrations
+npm run db:migrate:rollback # Rollback migrations
+npm run db:seed             # Seed database
+npm run db:refresh          # Reset and reseed database
+```
+
+### Code Quality
+
+```bash
+npm run lint               # Run ESLint
+npm run lint:fix           # Fix linting issues
+npm run format             # Format with Prettier
+npm run type-check         # TypeScript type checking
+```
+
+### Testing
+
+```bash
+npm test                   # Run tests
+npm run test:watch         # Watch mode
 ```
 
 ## 📁 Project Structure
 
 ```
 QSData/
-├── index.js              # Express server entry point
-├── authUsers.js          # User management (development)
-├── middleware/           # Authentication & authorization
-├── controllers/          # API controllers
-├── routes/              # API routes
-├── db/                  # Database connection & schemas
-├── client/              # React frontend
-├── docker-compose.yml   # Production Docker setup
-├── docker-compose.dev.yml # Development Docker setup
-└── .env                 # Environment variables (not in repo)
+├── config/
+│   └── database.js        # Database configuration
+├── controllers/           # API controllers
+├── middleware/            # Express middleware
+├── migrations/            # Database migrations
+├── models/               # Objection.js models
+├── routes/               # API routes
+├── seeds/                # Database seed data
+├── scripts/              # Utility scripts
+├── client/               # React frontend
+└── tests/                # Test files
 ```
 
-## 🔒 Security Notes
+## 🔐 Environment Variables
 
-- **Never commit `.env` files** to version control
-- **Use strong passwords** for production
-- **Rotate JWT secrets** regularly
-- **Monitor logs** for suspicious activity
-- **Keep dependencies updated**
+```env
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=qsdata
+DB_USER=postgres
+DB_PASSWORD=password
+
+# JWT
+JWT_SECRET=your-secret-key
+
+# Server
+PORT=3000
+NODE_ENV=development
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=60000
+RATE_LIMIT_MAX_REQUESTS=100
+```
+
+## 🎯 Key Features
+
+### EAV Pattern Implementation
+
+- **Dynamic Properties**: Define custom properties for any entity
+- **Type Safety**: Support for string, number, date, and boolean values
+- **Validation**: Built-in validation with formatting rules
+- **Options**: Predefined value options for properties
+
+### Task Management
+
+- **Rule-Based**: Automatic task generation based on property changes
+- **Assignment**: Assign to users or offices
+- **Status Tracking**: Pending, completed, overdue statuses
+- **Audit Trail**: Complete history of task changes
+
+### Approval Workflow
+
+- **Multi-Level**: Support for complex approval hierarchies
+- **Property-Specific**: Approve specific property changes
+- **Audit Trail**: Complete approval history with reasons
+
+### Performance Features
+
+- **Indexed Queries**: Optimized database indexes
+- **Materialized Views**: Fast data exports
+- **Pagination**: Efficient large dataset handling
+- **Filtering**: Advanced query filtering capabilities
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test file
+npm test -- tests/projects.test.js
+
+# Coverage report
+npm test -- --coverage
+```
 
 ## 🚀 Deployment
 
-### VPS Deployment
-1. Clone repository to VPS
-2. Create `.env` file with production values
-3. Run `docker-compose up --build -d`
-4. Configure reverse proxy (nginx) for HTTPS
-5. Set up firewall rules
+### Production Setup
 
-### Environment Variables for Production
+1. Set environment variables
+2. Run database migrations
+3. Build frontend: `npm run client:build`
+4. Start server: `npm start`
+
+### Docker Support
+
 ```bash
-JWT_SECRET=your-production-jwt-secret
-DATABASE_URL=postgres://postgres:strong-password@db:5432/qsdata
-POSTGRES_PASSWORD=strong-database-password
-CLIENT_ORIGIN=https://yourdomain.com
-NODE_ENV=production
+# Build and run with Docker
+docker-compose up -d
+
+# Run migrations in container
+docker-compose exec app npm run db:migrate
 ```
 
-## 📝 License
+## 📈 Monitoring
 
-This project is licensed under the ISC License. See [LICENSE](LICENSE) for details.
+### Health Checks
+
+- `GET /health` - Application health status
+- `GET /api/health` - API health status
+
+### Logging
+
+- Structured logging with timestamps
+- Error tracking with stack traces
+- Database query logging in development
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Run linting and tests
+6. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the ISC License.
+
+## 🆘 Support
+
+For issues and questions:
+
+- Check the documentation
+- Review existing issues
+- Create a new issue with detailed information
+
+---
+
+**Built with ❤️ using PERN Stack and EAV Pattern**

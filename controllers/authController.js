@@ -46,15 +46,12 @@ export async function login(req, res) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
-    // Security: Remove fallback secret
-    if (!process.env.JWT_SECRET) {
-      console.error('JWT_SECRET not configured');
-      return res.status(500).json({ error: 'Server configuration error' });
-    }
+    // Use development secret if not configured
+    const jwtSecret = process.env.JWT_SECRET || 'dev-secret-key-change-in-production';
     
     const token = jwt.sign(
       { username, role: user.role },
-      process.env.JWT_SECRET,
+      jwtSecret,
       { expiresIn: '1h' }
     );
     

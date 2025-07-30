@@ -6,11 +6,9 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import progressRouter from './routes/progress.js';
-import authRouter from './routes/auth.js';
-import sapRouter from './routes/sapProjects.js';
-import zoneRouter from './routes/zoneSummary.js';
-import psdpRouter from './routes/psdpProjects.js';
+import apiRoutes from './routes/api.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import './config/database.js'; // Initialize database connection
 
 dotenv.config();
 
@@ -26,7 +24,8 @@ if (!process.env.JWT_SECRET) {
   process.exit(1);
 }
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Enhanced security headers
 app.use(
@@ -70,16 +69,21 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // API routes
-app.use('/api', authRouter);
-app.use('/api/progress', progressRouter);
-app.use('/api/sap-projects', sapRouter);
-app.use('/api/zone-summary', zoneRouter);
-app.use('/api/psdp-projects', psdpRouter);
+app.use('/api', apiRoutes);
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'client/dist')));
 
-// Catch-all handler
+// Catch-all handler for SPA
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, 'client/dist/index.html');
   if (fs.existsSync(indexPath)) {
@@ -92,13 +96,13 @@ app.get('*', (req, res) => {
   }
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📊 Database: ${process.env.DB_NAME || 'qsdata'}`);
+  console.log(`🔗 API: http://localhost:${PORT}/api`);
+  console.log(`🏥 Health: http://localhost:${PORT}/health`);
 });
