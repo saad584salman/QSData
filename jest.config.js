@@ -1,14 +1,20 @@
 export default {
   testEnvironment: 'node',
-  transform: {},
+  preset: 'ts-jest/presets/default-esm',
+  extensionsToTreatAsEsm: ['.ts'],
+  transform: {
+    '^.+\\.ts$': ['ts-jest', {
+      useESM: true
+    }]
+  },
   testTimeout: 60000, // Increased timeout for database operations
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
-  testMatch: ['**/tests/**/*.test.js'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  testMatch: ['**/tests/**/*.test.ts', '**/tests/**/*.test.js'],
   collectCoverageFrom: [
-    'controllers/**/*.js',
-    'routes/**/*.js',
-    'models/**/*.js',
-    'middleware/**/*.js',
+    'controllers/**/*.{js,ts}',
+    'routes/**/*.{js,ts}',
+    'models/**/*.{js,ts}',
+    'middleware/**/*.{js,ts}',
     '!**/node_modules/**',
   ],
   // Run tests sequentially to avoid database deadlocks
@@ -17,4 +23,7 @@ export default {
   maxConcurrency: 1,
   // Add verbose output for debugging
   verbose: true,
+  moduleNameMapping: {
+    '^@/(.*)$': '<rootDir>/$1',
+  },
 };

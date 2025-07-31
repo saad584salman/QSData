@@ -1,7 +1,7 @@
 {
-  "watch": ["index.js", "routes", "controllers", "middleware", "client/src"],
-  "ignore": ["client/dist"],
-  "ext": "js,json,jsx",
+  "watch": ["index.ts", "routes", "controllers", "middleware", "client/src"],
+  "ignore": ["client/dist", "dist"],
+  "ext": "js,json,jsx,ts,tsx",
   "events": {
     "restart": "npm run client:build"
   }
